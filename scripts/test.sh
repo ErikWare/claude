@@ -175,5 +175,14 @@ printf 'acme corp\n' >.secrets-denylist
 printf 'we work for ACME Corp\n' >leak.md && g add leak.md
 expect 1 "DENYLIST" "$K/check-secrets.sh" --staged
 
+CASE=install
+I=$T/home && mkdir -p "$I"
+expect 0 "CREATED" env HOME="$I" CLAUDE_CONFIG_DIR= "$K/../install.sh"
+expect 0 - test -f "$I/.claude/skills/start-desk/SKILL.md"
+expect 0 "imports the kit" env HOME="$I" CLAUDE_CONFIG_DIR= "$K/../install.sh"
+rm -rf "$I/.claude" && mkdir -p "$I/.claude" && echo mine >"$I/.claude/CLAUDE.md"
+expect 1 "Left untouched" env HOME="$I" CLAUDE_CONFIG_DIR= "$K/../install.sh"
+expect 0 - test "$(cat "$I/.claude/CLAUDE.md")" = mine
+
 echo "test.sh: $pass passed, $fail failed"
 [ $fail -eq 0 ]
