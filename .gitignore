@@ -1,0 +1,110 @@
+# This repo is PUBLIC. It holds a method, never a machine's state.
+# Default stance: if a file could carry a secret, a path, or a session, ignore it.
+# Anything you genuinely need to commit that matches below: force-add it
+# (`git add -f`) and say why in the commit message.
+
+# --- Secrets and credentials -------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.mobileprovision
+*.cer
+*.crt
+*.der
+id_rsa*
+id_ed25519*
+id_ecdsa*
+*.gpg
+*.asc
+.netrc
+.npmrc
+.pypirc
+.git-credentials
+credentials*
+*credentials*.json
+*secret*
+*secrets*
+!**/scripts/check-secrets.sh
+*token*
+!**/*tokens*.md
+service-account*.json
+.aws/
+.gcloud/
+.ssh/
+.gnupg/
+.kube/
+.docker/config.json
+
+# --- Claude Code machine state (never lives here; ~/.claude owns it) ----------
+# If someone ever clones this repo *as* ~/.claude, none of this may be staged.
+settings.json
+settings.local.json
+.claude/settings.local.json
+.credentials.json
+.claude.json
+.claude.json.*
+projects/
+sessions/
+session-env/
+shell-snapshots/
+statsig/
+todos/
+tasks/
+plans/
+history.jsonl
+*.jsonl
+ide/
+plugins/
+cache/
+local/
+file-history/
+debug/
+telemetry/
+memory/
+MEMORY.md
+slot-claims.json
+*.ledger.json
+
+# --- Transcripts, logs, dumps ------------------------------------------------
+*.log
+logs/
+*.transcript
+*.dump
+*.sqlite
+*.sqlite3
+*.db
+core
+core.*
+
+# --- OS / editor noise -------------------------------------------------------
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# --- Build and tool output ---------------------------------------------------
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+dist/
+build/
+*.tmp
+*.bak
+*.orig
+*.rej
