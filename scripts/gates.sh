@@ -4,7 +4,9 @@
 # contract is the point: a gate with a standing "known benign" output is a gate
 # nobody reads, and that is exactly how real ID collisions got past one.
 #
-#   gates.sh ids       <registry>                ID defined twice, or an ID lost vs HEAD
+#   gates.sh ids       <registry> [base]         ID defined twice, or an ID on <base>
+#                                                (default HEAD) that is gone. At landing
+#                                                pass the trunk: there HEAD IS the tree.
 #   gates.sh ids-refs  <registry> [trunk]        the same new ID filed on two unlanded
 #                                                refs (local AND remote) or on a ref and
 #                                                the trunk — invisible to any one tree
@@ -29,7 +31,7 @@ ID_RE=${ID_RE:-'[A-Z]{2,}-[0-9]+'}
 DEF_RE=${DEF_RE:-'^- \*\*[A-Z]{2,}-[0-9]+\*\*'}
 
 usage() {
-	sed -n '2,19p' "$0" | sed 's/^#//' >&2
+	sed -n '2,21p' "$0" | sed 's/^#//' >&2
 	exit 2
 }
 
@@ -45,8 +47,10 @@ defs() {
 }
 
 gate_ids() {
-	[ $# -eq 1 ] || usage
+	[ $# -ge 1 ] || usage
 	reg=$1
+	base=${2:-HEAD}
+	git rev-parse --verify --quiet "$base^{commit}" >/dev/null || { echo "BROKEN: no such base: $base"; exit 2; }
 	[ -f "$reg" ] || { echo "BROKEN: no such registry: $reg"; exit 2; }
 	fail=0
 	dup=$(defs "$reg" | cut -f1 | sort | uniq -d)
@@ -55,12 +59,12 @@ gate_ids() {
 		printf '  %s\n' $dup
 		fail=1
 	fi
-	if git cat-file -e "HEAD:./$reg" 2>/dev/null; then
-		git show "HEAD:./$reg" | grep -oE "$ID_RE" | sort -u >"$TMP/old"
+	if git cat-file -e "$base:./$reg" 2>/dev/null; then
+		git show "$base:./$reg" | grep -oE "$ID_RE" | sort -u >"$TMP/old"
 		grep -oE "$ID_RE" "$reg" | sort -u >"$TMP/new"
 		lost=$(comm -23 "$TMP/old" "$TMP/new")
 		if [ -n "$lost" ]; then
-			echo "ID-LOSS: on HEAD but gone from $reg (IDs are never deleted — move them to Done):"
+			echo "ID-LOSS: on $base but gone from $reg (IDs are never deleted — move them to Done):"
 			printf '  %s\n' $lost
 			fail=1
 		fi

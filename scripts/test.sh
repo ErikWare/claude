@@ -125,6 +125,14 @@ printf '# Backlog\n\n- **APP-2** second item\n' >BACKLOG.md
 expect 1 "APP-1" "$K/gates.sh" ids BACKLOG.md
 git checkout -q BACKLOG.md
 expect 2 BROKEN "$K/gates.sh" ids nope.md
+expect 2 "no such base" "$K/gates.sh" ids BACKLOG.md nope
+# At landing HEAD is the rebased tip, so loss must be measured against the trunk.
+git switch -q -c wt/drop main && printf '# Backlog\n\n- **APP-2** second item\n' >BACKLOG.md && g commit -qam "drop APP-1"
+expect 0 - "$K/gates.sh" ids BACKLOG.md
+expect 1 "ID-LOSS: on main" "$K/gates.sh" ids BACKLOG.md main
+git switch -q main
+expect 2 "red on the merged tree" "$K/land.sh" main wt/drop "$K/gates.sh ids BACKLOG.md main" BACKLOG.md
+git branch -q -D wt/drop
 
 CASE=ids-refs
 # Two unlanded branches file DIFFERENT items under one new ID. Each tree is
