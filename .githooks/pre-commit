@@ -1,0 +1,3 @@
+#!/bin/sh
+# Refuse a commit that would publish a home path, a key, or a denylisted name.
+exec "$(git rev-parse --show-toplevel)/scripts/check-secrets.sh" --staged
