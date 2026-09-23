@@ -23,6 +23,6 @@
 ```
 
 **Gates that run on every landing**, inside the test command above:
-`~/.claude/kit/scripts/gates.sh ids {{BACKLOG}}`. Before assigning a new ID,
+`~/.claude/kit/scripts/gates.sh ids {{BACKLOG}} {{TRUNK}}` (against the trunk: at landing HEAD *is* the tree, so a HEAD-based loss check is vacuous). Before assigning a new ID,
 run `gates.sh ids-refs {{BACKLOG}} {{TRUNK}}`: a collision between two
 unlanded branches can't be seen from any single tree.

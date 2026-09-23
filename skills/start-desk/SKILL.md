@@ -58,7 +58,7 @@ Detect. **Never invent.** A value you can't find is a question, not a default.
 | desk log | `docs/desk-log.md` |
 | slot pattern | `<parent>/<repo>-wt-[1-9]`, siblings of the main checkout |
 | slot folders | 3, unless the user said otherwise |
-| gate command | `<test command> && ~/.claude/kit/scripts/gates.sh ids <backlog>`: what `land.sh` runs on the merged tree |
+| gate command | `<test command> && ~/.claude/kit/scripts/gates.sh ids <backlog> <trunk>`: what `land.sh` runs on the merged tree |
 | push after landing | **off**. Pushing is an outward action. Turn it on only when the user says so, and record that in the table. |
 
 Then:
