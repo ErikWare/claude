@@ -157,7 +157,8 @@ ceiling.
 **Guard.**
 - `release.sh`, then the session ends itself. In the Dispatch room nobody else
   will close it.
-- `gates.sh wip` (TRUNK and WIP_CEILING from `.claude/desk.conf`) refuses to let the desk brief a fourth
+- `gates.sh wip` (TRUNK and WIP_CEILING from `.claude/desk.conf`) refuses to
+  let the desk brief a fourth
   item.
 - `census.sh` prints `WIP n/ceiling` at every boot, so the number is
   measured, not remembered.
@@ -217,8 +218,9 @@ most of an hour. The check that would have caught it existed, and took
 
 **Signature.** The trunk turns red with no landing in between.
 
-**Guard.** The desk's own commits go through the same gate steps as
-landings (`doctor.sh --run` runs TEST_CMD on the trunk). Ideally, CI runs the gates on every push. CI is the one fix that
+**Guard.** The desk's own commits go through a gate too (`doctor.sh --run`
+runs TEST_CMD on the trunk). Ideally, CI runs the gates on every push. CI is
+the one fix that
 **doesn't depend on anyone suspecting anything**, and that's the whole class
 of failure this document is about.
 

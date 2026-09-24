@@ -88,7 +88,8 @@ a successful outcome, not a deviation.
   with a baton.
 
 **House rules.** Stage explicit paths, never `git add -A`. Push only where the
-project's `desk.conf` (PUSH_AFTER_LAND, PUSH_ON_DONE) or the user says to. Secrets come from the environment,
+project's `desk.conf` (PUSH_AFTER_LAND, PUSH_ON_DONE) or the user says to.
+Secrets come from the environment,
 never from code, logs or chat. Run every build and test under a timeout. Report
 failures as failures, with the output.
 
@@ -135,7 +136,8 @@ outside the owned files is a refusal, never a fix made at the desk.
 ## Contributor
 
 **Boot:** `claim.sh claim "$PWD" <ID> <max-min> <goal>`, then `selfcheck.sh
-<ID> <branch>` (pattern and trunk come from `.claude/desk.conf`), and report what it prints. `FOREIGN
+<ID> <branch>` (pattern and trunk come from `.claude/desk.conf`), and report
+what it prints. `FOREIGN
 CLAIM`: park and report that ID, and never clear it. No brief: park and ask.
 Never pick up work on your own initiative.
 

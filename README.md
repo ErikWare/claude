@@ -28,15 +28,15 @@ format, and each role's rules. `scripts/` holds the gates, POSIX sh plus git,
 each mutation-tested. `templates/desk.conf` is the one per-project file they
 read. Every folder under `skills/` is installed and the reasoning lives in
 `docs/`, discovered rather than listed here, which is the same rule the kit's
-own `gates.sh unrun` holds a project's tests to. `CONTRIBUTING.md` says how to
-add to it.
+own `gates.sh unrun` holds a project's tests to.
 
 ## Adopting an existing project
 
 Each project gets one committed file, `.claude/desk.conf`: trunk, test
 command, optional typecheck and build commands, and the ID registry. Run
 `~/.claude/kit/scripts/doctor.sh --run` in the main checkout at any time. It
-prints `OK`, `MISSING` or `WARN` per item and changes nothing. `/start-desk`
+prints `OK`, `MISSING` or `WARN` per item and changes nothing in the repo.
+`/start-desk`
 scaffolds the mechanical parts (the config, a backlog stub, `docs/briefs/`, a
 desk log, the slot worktrees), but it **never guesses the test command**. If
 the project's own manifest doesn't name one, setup reports `BLOCKED` until you
@@ -64,7 +64,8 @@ do. A bare repository isn't ready until `doctor.sh` exits 0.
 - **Why not a plugin?** The docs recommend plugins for sharing skills, and
   this kit may become one. But plugin skills are namespaced
   (`/plugin:start-desk`), installed as copies that update through the
-  marketplace, and, as far as the plugin docs we read show, don't install a user-level `CLAUDE.md`. For one person's
+  marketplace, and, as far as the plugin docs we read show, don't install a
+  user-level `CLAUDE.md`. For one person's
   machines, a clone plus links is simpler and updates instantly. [plugins]
 
 `install.sh --dry-run` shows every change first, and `install.sh --uninstall`
@@ -76,9 +77,9 @@ shell, on macOS or Linux.
 1. **Semaphore reports.** A subagent that's finished says
    `DONE APP-12 wt/app-12-retry 4e1f0a2 pushed` and names what it didn't
    verify. Prose is allowed in exactly three places: a wrong premise, an
-   unanticipated finding, and the unverified list. On the examples in the
-   doc, reports shrink by about 70–92% (estimated), and the shorter version
-   carries *more* usable information.
+   unanticipated finding, and the unverified list. On the examples in
+   [`docs/semaphore.md`](docs/semaphore.md), reports shrink by about 70–92%
+   (estimated), and the shorter version carries *more* usable information.
 2. **Machines, not rules.** The failures that cost the most were adjacent to
    the intent and invisible at the point of editing, so more care doesn't
    catch them. Every guard here is a script that exits non-zero, and each
@@ -92,7 +93,8 @@ shell, on macOS or Linux.
 ## Conformance with the Claude Code docs
 
 Followed: skill layout and frontmatter (`name`, `description`,
-`argument-hint`, `disable-model-invocation`, `user-invocable`, `allowed-tools`), `SKILL.md`
+`argument-hint`, `disable-model-invocation`, `user-invocable`,
+`allowed-tools`), `SKILL.md`
 under 500 lines with supporting files linked from it, `CLAUDE.md` under 200
 lines, `@path` imports, subagent `model` values
 (`haiku`/`sonnet`/`opus`/`fable`/`inherit`), and permission rules in

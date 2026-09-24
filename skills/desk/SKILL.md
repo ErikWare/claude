@@ -52,8 +52,8 @@ ran*, never by reading the diff more carefully:
    ```
    **Never `switch -C` on a resume.** It resets the branch to the trunk and
    destroys every commit the baton listed. Never switch a slot that is
-   claimed or dirty. Write the brief to `docs/briefs/<ID>.md`
-   (see the kit's `docs/briefs-and-backlog.md`), commit it, and give the product owner the
+   claimed or dirty. Write the brief to `docs/briefs/<ID>.md` (see the kit's
+   `docs/briefs-and-backlog.md`), commit it, and give the product owner the
    **path**.
 4. **Land**, one branch at a time, in the main checkout, once the contributor
    has run `done.sh`. This is what frees the branch name.
@@ -130,9 +130,8 @@ is the desk grading its own paper.
 
 The desk can't rotate cheaply. It holds the merge history and every judgment
 call that never reached a commit message. So keep a log, committed on the
-trunk, at the path the project's CLAUDE.md names (the scaffold's default is
-`docs/desk-log.md`). It holds these sections and
-nothing else:
+trunk, at `docs/desk-log.md`, where `/start-desk` scaffolds it. It holds these
+sections and nothing else:
 
 - **In flight**: per slot, the item ID, branch, one-line goal, owned files,
   and when it was briefed.
