@@ -1,5 +1,5 @@
 #!/bin/sh
-# release.sh <trunk> <slot> <ID> <branch>
+# release.sh <slot> <ID> <branch>      (TRUNK from .claude/desk.conf)
 #
 # Warm release, once the desk says the item landed (or after a park): put the
 # slot back detached at the trunk tip, delete the branch if it is merged, and
@@ -20,15 +20,16 @@
 set -u
 
 HERE=$(cd "$(dirname "$0")" && pwd -P)
+. "$HERE/conf.sh"
 
 usage() {
-	echo "usage: release.sh <trunk> <slot> <ID> <branch>" >&2
+	echo "usage: release.sh <slot> <ID> <branch>" >&2
 	exit 1
 }
 
-[ $# -eq 4 ] || usage
+[ $# -eq 3 ] || usage
 
-TRUNK=$1 SLOT=$2 ID=$3 BRANCH=$4
+SLOT=$1 ID=$2 BRANCH=$3
 
 # Every git command below runs in the cwd, but the claim released is <slot>'s.
 # If they differ we would detach someone else and free a slot that still holds

@@ -1,5 +1,8 @@
 #!/bin/sh
-# census.sh [repo] [trunk] [ceiling]
+# census.sh
+#
+# Run in the repository. TRUNK, WIP_CEILING and BRANCH_PREFIX come from
+# .claude/desk.conf.
 #
 # The desk's view of reality: claims, worktrees, work in flight, orphans. Run
 # it at boot and before every brief. Where the desk log and the census
@@ -11,12 +14,11 @@
 set -u
 
 HERE=$(cd "$(dirname "$0")" && pwd -P)
-REPO=${1:-.}
-TRUNK=${2:-main}
-CEILING=${3:-3}
+. "$HERE/conf.sh"
+CEILING=$WIP_CEILING
 
-cd "$REPO" 2>/dev/null && git rev-parse --git-dir >/dev/null 2>&1 || {
-	echo "usage: census.sh [repo] [trunk] [ceiling]   ($REPO is not a git repository)" >&2
+[ $# -eq 0 ] && git rev-parse --git-dir >/dev/null 2>&1 || {
+	echo "usage: census.sh   (run it inside a git repository; no arguments)" >&2
 	exit 1
 }
 
@@ -28,7 +30,7 @@ git worktree list | sed 's/^/  /'
 
 echo "== in flight (ceiling $CEILING)"
 n=0
-for b in $(git for-each-ref --format='%(refname:short)' refs/heads/wt/); do
+for b in $(git for-each-ref --format='%(refname:short)' "refs/heads/$BRANCH_PREFIX"); do
 	git merge-base --is-ancestor "$b" "$TRUNK" && continue
 	n=$((n + 1))
 	ahead=$(git rev-list --count "$TRUNK..$b")

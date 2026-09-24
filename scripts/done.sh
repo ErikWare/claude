@@ -11,9 +11,10 @@
 # indistinguishable from a branch nobody touched. It happened four times in one
 # day. This script will not report done unless the branch contains HEAD.
 #
-#   DONE_PUSH=0   skip the push (for a project with no remote). The push is the
-#                 cheapest orphan insurance there is: a pushed commit can be
-#                 recovered by name from any machine.
+#   PUSH_ON_DONE=0   (in .claude/desk.conf) skip the push. With no origin
+#                    remote there is nothing to push to and it is skipped too.
+#                    The push is the cheapest orphan insurance there is: a
+#                    pushed commit can be recovered by name from any machine.
 #
 # Exit status:
 #   0  branch contains the work, pushed (or push disabled / no remote), detached
@@ -23,6 +24,9 @@
 #   5  push failed: the work is local only — do not report done yet
 
 set -u
+
+HERE=$(cd "$(dirname "$0")" && pwd -P)
+. "$HERE/conf.sh"
 
 usage() {
 	echo "usage: done.sh <branch>" >&2
@@ -76,7 +80,7 @@ if [ -z "$on" ] && [ "$head_sha" != "$br_sha" ]; then
 	fi
 fi
 
-if [ "${DONE_PUSH:-1}" != 0 ] && git remote get-url origin >/dev/null 2>&1; then
+if [ "$PUSH_ON_DONE" != 0 ] && git remote get-url origin >/dev/null 2>&1; then
 	if ! git push --quiet -u origin "refs/heads/$BRANCH:refs/heads/$BRANCH" 2>/dev/null; then
 		# A rewritten branch (after a send-back rebase) needs a lease, never a bare force.
 		if ! git push --quiet --force-with-lease -u origin "refs/heads/$BRANCH:refs/heads/$BRANCH"; then

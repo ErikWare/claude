@@ -1,10 +1,10 @@
 #!/bin/sh
-# selfcheck.sh <slot-pattern> <trunk> [expected-ID] [expected-branch]
+# selfcheck.sh [expected-ID] [expected-branch]
 #
 # The contributor's boot check. Run in the slot, after claiming, before any edit.
+# SLOT_PATTERN (a shell glob the worktree top must match) and TRUNK come from
+# .claude/desk.conf.
 #
-#   <slot-pattern>     shell glob the worktree top must match, e.g. "$HOME/myapp-wt-[1-9]"
-#   <trunk>            main | master
 #   [expected-ID]      the backlog ID this session was briefed with
 #   [expected-branch]  the branch the brief names
 #
@@ -22,18 +22,18 @@
 set -u
 
 HERE=$(cd "$(dirname "$0")" && pwd -P)
+. "$HERE/conf.sh"
 
 usage() {
-	echo "usage: selfcheck.sh <slot-pattern> <trunk> [expected-ID] [expected-branch]" >&2
+	echo "usage: selfcheck.sh [expected-ID] [expected-branch]" >&2
 	exit 1
 }
 
-[ $# -ge 2 ] || usage
+[ $# -le 2 ] || usage
 
-PATTERN=$1
-TRUNK=$2
-WANT_ID=${3-}
-WANT_BRANCH=${4-}
+PATTERN=$SLOT_PATTERN
+WANT_ID=${1-}
+WANT_BRANCH=${2-}
 
 top=$(git rev-parse --show-toplevel 2>/dev/null)
 if [ -z "$top" ]; then

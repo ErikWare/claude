@@ -1,16 +1,24 @@
 #!/bin/sh
-# land.sh <trunk> <branch> <test-cmd> <owned-path>...
+# land.sh <branch> <owned-path>...
 #
-# The desk's merge gate. Run in the MAIN CHECKOUT.
+# The desk's merge gate. Run in the MAIN CHECKOUT. Trunk and commands come
+# from .claude/desk.conf (see scripts/conf.sh; env vars of the same name win).
 #
-#   <trunk>       main | master
 #   <branch>      the wt/<topic> branch to land
-#   <test-cmd>    one shell string, run with sh -c on the rebased tree
 #   <owned-path>… exact repo-relative paths, as `git diff --name-only` prints
 #                 them (the check is whole-line, so no globs, no trailing /)
 #
+# The gate on the rebased tree, each step its own `sh -c`, stopping at the
+# first red and naming it:
+#   typecheck  TYPECHECK_CMD   (skipped, with one line, when empty)
+#   test       TEST_CMD        (required: no test command, no oracle)
+#   build      BUILD_CMD       (skipped when empty)
+#   ids        gates.sh ids $REGISTRY $TRUNK  (skipped when REGISTRY is empty
+#              or absent: at landing HEAD IS the tree, so loss is measured
+#              against the trunk)
+#
 # Invariant, held on EVERY exit path including success: the desk ends on
-# <trunk> with a clean working tree. go_home() forces that. Forcing is safe
+# the trunk with a clean working tree. go_home() forces that. Forcing is safe
 # HERE ONLY because the desk never holds work of its own — everything it can
 # discard is a test/build artifact. A slot must never do this.
 #
@@ -19,12 +27,12 @@
 # is exactly what was tested. The contributor's own green run was on a tree it
 # shaped, at a commit it chose; this one is not.
 #
-#   LAND_PUSH=1   push <trunk> to origin after landing. Off by default: pushing
-#                 is the project's call. Turn it on in the project's CLAUDE.md.
+#   PUSH_AFTER_LAND=1   push the trunk to origin after landing. Off by
+#                       default: pushing is the project's call.
 #
 # Exit status:
 #   0  landed (fast-forward)
-#   1  usage / no owned-files list / broken check
+#   1  usage / no owned-files list / config missing / broken check
 #   2  STOP: send it back (still checked out, empty, rebase conflict, red,
 #      out of scope)
 #   3  merge --ff-only refused (the trunk moved under the rebase), or the push
@@ -32,17 +40,19 @@
 
 set -u
 
+HERE=$(cd "$(dirname "$0")" && pwd -P)
+. "$HERE/conf.sh"
+
 usage() {
-	echo "usage: land.sh <trunk> <branch> <test-cmd> <owned-path>..." >&2
+	echo "usage: land.sh <branch> <owned-path>..." >&2
 	exit 1
 }
 
-[ $# -ge 3 ] || usage
+[ $# -ge 1 ] || usage
 
-TRUNK=$1
-BRANCH=$2
-TESTCMD=$3
-shift 3
+BRANCH=$1
+shift
+conf_require TEST_CMD
 
 TMP=$(mktemp -d "${TMPDIR:-/tmp}/land.XXXXXX") || {
 	echo "FAIL: no temp dir"
@@ -56,7 +66,7 @@ cleanup() { rm -rf "$TMP"; }
 
 # Return to the trunk with a clean tree, whatever state the tree is in.
 # -f discards modified tracked files; `clean -fd` removes untracked artifacts a
-# test run dropped. No -x: ignored files (node_modules, DerivedData) are kept.
+# test run dropped. No -x: ignored files (dependency and build caches) are kept.
 go_home() {
 	git switch -f "$TRUNK" >/dev/null 2>&1
 	if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
@@ -146,6 +156,8 @@ if [ $? -ne 0 ]; then
 	esac
 fi
 
+[ -n "$CONF_TOP" ] && cd "$CONF_TOP"
+
 # --- rebase onto the trunk -------------------------------------------------
 git rebase "$TRUNK"
 if [ $? -ne 0 ]; then
@@ -156,13 +168,30 @@ if [ $? -ne 0 ]; then
 	exit 2
 fi
 
-# --- the brief's done-check, on the merged tree ----------------------------
-sh -c "$TESTCMD"
-if [ $? -ne 0 ]; then
-	echo "STOP: red on the merged tree — send it back"
+# --- the gate, on the merged tree -----------------------------------------
+red() {
+	echo "STOP: red on the merged tree at $1 — send it back"
 	go_home
 	cleanup
 	exit 2
+}
+step() {
+	if [ -z "$2" ]; then
+		echo "skipped: $1 (not configured)"
+		return 0
+	fi
+	echo "== $1: $2"
+	sh -c "$2" || red "$1"
+}
+step typecheck "$TYPECHECK_CMD"
+step test "$TEST_CMD"
+step build "$BUILD_CMD"
+if [ -z "$REGISTRY" ]; then
+	echo "skipped: ids (REGISTRY not configured)"
+elif [ ! -f "$REGISTRY" ]; then
+	echo "skipped: ids ($REGISTRY not in the tree)"
+else
+	"$HERE/gates.sh" ids "$REGISTRY" "$TRUNK" || red ids
 fi
 
 # --- scope: every changed path must be in the brief ------------------------
@@ -208,7 +237,7 @@ fi
 go_home
 echo "LANDED: $BRANCH -> $TRUNK ($(git rev-parse --short HEAD))"
 cleanup
-if [ "${LAND_PUSH:-0}" = 1 ]; then
+if [ "$PUSH_AFTER_LAND" = 1 ]; then
 	if ! git push --quiet origin "$TRUNK"; then
 		echo "PUSH FAILED: landed locally, $TRUNK not on origin"
 		exit 3

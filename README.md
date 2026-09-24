@@ -12,27 +12,35 @@ few tokens as possible without shipping wrong code.
 git clone git@github.com:ErikWare/claude.git ~/claude-kit
 ~/claude-kit/install.sh            # safe to re-run; changes nothing it didn't create
 cd ~/your-project && claude        # open Claude Code in the project's main checkout
-/start-desk                        # detect the room, wire the project, become the desk
+/start-desk                        # detect the room, run doctor.sh, scaffold, become the desk
 ```
 
 That's it. `/start-desk` also works from inside the clone before you install
 anything, because the repo carries its own `.claude/skills/` link.
 
-Check the scripts on your machine with `scripts/test.sh`. It runs 67
+Check the scripts on your machine with `scripts/test.sh`. It runs 100
 assertions in a throwaway repo, with no network access.
 
 ## What you get
 
-| Path | What it is |
-|---|---|
-| `CLAUDE.md` | The boot file every session loads. It covers role detection, the report format, and the rules each role follows. ~150 lines. |
-| `skills/start-desk/` | `/start-desk`. Its first job is working out whether you're on a phone through Dispatch or at a terminal ([rooms.md](skills/start-desk/rooms.md)). |
-| `scripts/` | The gates, as POSIX sh plus git. `land.sh` (the merge gate), `done.sh` / `release.sh` / `selfcheck.sh` / `claim.sh` (the contributor lifecycle), `census.sh`, and `gates.sh` (ID collisions, WIP, orphans, stale builds, unrun tests). |
-| [`docs/semaphore.md`](docs/semaphore.md) | **The report protocol.** A status line, a SHA, and what wasn't verified, with no narration. The biggest single saving. |
-| [`docs/failure-catalogue.md`](docs/failure-catalogue.md) | Eleven failures that cost real budget. Each has its forensic signature and the script that guards against it. |
-| [`docs/model-tiering.md`](docs/model-tiering.md) | Which model does which job. Tier by the cost of an undetected error, and run at most two at a time. |
-| [`docs/desk.md`](docs/desk.md) | The tech lead's loop, what `land.sh` guarantees, and resolve-vs-refuse. |
-| [`docs/briefs-and-backlog.md`](docs/briefs-and-backlog.md) | The five-field brief, ID discipline, and the backlog tiers. |
+`CLAUDE.md` is the boot file every session loads: role detection, the report
+format, and each role's rules. `scripts/` holds the gates, POSIX sh plus git,
+each mutation-tested. `templates/desk.conf` is the one per-project file they
+read. Every folder under `skills/` is installed and the reasoning lives in
+`docs/`, discovered rather than listed here, which is the same rule the kit's
+own `gates.sh unrun` holds a project's tests to. `CONTRIBUTING.md` says how to
+add to it.
+
+## Adopting an existing project
+
+Each project gets one committed file, `.claude/desk.conf`: trunk, test
+command, optional typecheck and build commands, and the ID registry. Run
+`~/.claude/kit/scripts/doctor.sh --run` in the main checkout at any time. It
+prints `OK`, `MISSING` or `WARN` per item and changes nothing. `/start-desk`
+scaffolds the mechanical parts (the config, a backlog stub, `docs/briefs/`, a
+desk log, the slot worktrees), but it **never guesses the test command**. If
+the project's own manifest doesn't name one, setup reports `BLOCKED` until you
+do. A bare repository isn't ready until `doctor.sh` exits 0.
 
 ## How it installs, and why that way
 
@@ -84,7 +92,7 @@ shell, on macOS or Linux.
 ## Conformance with the Claude Code docs
 
 Followed: skill layout and frontmatter (`name`, `description`,
-`argument-hint`, `disable-model-invocation`, `allowed-tools`), `SKILL.md`
+`argument-hint`, `disable-model-invocation`, `user-invocable`, `allowed-tools`), `SKILL.md`
 under 500 lines with supporting files linked from it, `CLAUDE.md` under 200
 lines, `@path` imports, subagent `model` values
 (`haiku`/`sonnet`/`opus`/`fable`/`inherit`), and permission rules in

@@ -46,50 +46,68 @@ Each one that fails is a `BLOCKED` report naming the fix. Don't work around it.
    file to your personal CLAUDE.md` in the report and carry on. The rest of
    setup doesn't depend on it.
 
-## 2. Wire the project
+## 2. Doctor, then scaffold only the mechanical pieces
 
-Detect. **Never invent.** A value you can't find is a question, not a default.
+Run `~/.claude/kit/scripts/doctor.sh` and put its lines in the report as they
+are. It never creates anything; it tells you what is missing.
 
-| value | how to find it |
-|---|---|
-| test command | the project's own: `package.json` `scripts.test`, `Makefile` `test:`, `pyproject`/`pytest`, `cargo test`, `go test ./...`. None? That's a question. A desk without a test command is no oracle. |
-| per-claim setup | lockfile-driven: `npm ci`, `pnpm i --frozen-lockfile`, `uv sync`, … or `none` |
-| backlog | an existing `BACKLOG.md` / `docs/**/BACKLOG.md`, else create `BACKLOG.md` (conventions in the kit's `docs/briefs-and-backlog.md`) |
-| desk log | `docs/desk-log.md` |
-| slot pattern | `<parent>/<repo>-wt-[1-9]`, siblings of the main checkout |
-| slot folders | 3, unless the user said otherwise |
-| gate command | `<test command> && ~/.claude/kit/scripts/gates.sh ids <backlog> <trunk>`: what `land.sh` runs on the merged tree |
-| push after landing | **off**. Pushing is an outward action. Turn it on only when the user says so, and record that in the table. |
+Then scaffold what is mechanical, and nothing else:
 
-Then:
+1. `.claude/desk.conf`: copy the kit's `templates/desk.conf` and fill in only
+   the values you **detected**. TRUNK is `origin/HEAD` if set, else `main`,
+   else `master`. SLOT_PATTERN stays empty (the default is
+   `<parent>/<repo>-wt-[1-9]`, siblings of the main checkout). An existing
+   file is compared and reported, never overwritten.
+2. **TEST_CMD: never invent it.** Take it only from the project's own
+   manifest: `package.json` `scripts.test`, a `Makefile` `test:` target,
+   `pyproject.toml` with pytest configured, `Cargo.toml` (`cargo test`),
+   `go.mod` (`go test ./...`). Nothing there means TEST_CMD stays empty and
+   the report says `BLOCKED ... needs: the command that proves this project
+   works`. TYPECHECK_CMD and BUILD_CMD follow the same rule, and empty is
+   fine for them.
+3. A registry stub if REGISTRY names a file that doesn't exist: a `# Backlog`
+   heading, in the default convention (`- **APP-12** title`, one bullet per
+   item; see the kit's `docs/briefs-and-backlog.md`). An existing registry in
+   another format gets its DEF_RE set in desk.conf, not rewritten.
+4. `docs/briefs/.gitkeep`, and a desk log stub at `docs/desk-log.md` holding
+   the section headings from the `desk` skill and nothing more.
+5. The slot folders, 3 unless the user said otherwise: `git worktree add
+   --detach <path> <trunk>`, never on the trunk branch, since git allows a
+   branch in one worktree at a time and the desk holds it.
+6. The project's `CLAUDE.md` gets at most a three-line pointer, and nothing
+   more. The values live in the config, not in prose:
+   ```
+   ## Desk
+   Trunk, slot pattern, commands and registry: `.claude/desk.conf`.
+   Per-claim setup: `<npm ci | uv sync | none>`.
+   ```
+7. **Re-run** `doctor.sh --run` (the baseline: TEST_CMD on the trunk, under
+   a timeout). Every remaining MISSING line goes in the report. A red
+   baseline is `BLOCKED`: a desk can't gate branches against a trunk that's
+   already red.
+8. Commit only the files you created or changed, staged by explicit path, in
+   one commit: `chore: adopt the desk workflow`. Don't push. PUSH_AFTER_LAND
+   stays 0 until the user says otherwise: pushing is an outward action.
 
-1. Append [project-template.md](project-template.md), filled in, to the
-   project's `CLAUDE.md`, or create the file. If a `## Desk` section already
-   exists, compare it, report the differences, and leave it alone.
-2. Create the slot folders that are missing. Use `git worktree add --detach
-   <path> <trunk>`, never on the trunk branch, since git allows a branch in one
-   worktree at a time and the desk holds it.
-3. Create the backlog and desk log if they are missing, each as a heading and
-   its sections, nothing more.
-4. **Baseline.** Run the test command on the trunk, under a timeout. Red is a
-   `BLOCKED` report: a desk can't gate branches against a trunk that's already
-   red. Then run `gates.sh ids <backlog>`, and `census.sh . <trunk>`.
-5. Commit only the files you created or changed, staged by explicit path, in
-   one commit: `chore: adopt the desk workflow`. Don't push.
+**A bare repository is not ready until `doctor.sh` exits 0.** Say so plainly.
+Scaffolding makes the folders; it cannot supply the one thing that makes the
+desk an oracle, which is a test command that proves the project works.
 
 ## 3. Become the desk
 
-Read the kit's `docs/desk.md` once. Then run its loop: census, pick, brief,
-land. Pick the models for subagents by `docs/model-tiering.md`. Run no more
-than two subagents at a time, and put "do not spawn sub-agents" in each prompt.
+Only once `doctor.sh` exits 0: invoke the `desk` skill, once. Then run its
+loop: census, pick, brief, land. Pick the models for subagents by
+`docs/model-tiering.md`. Run no more than two subagents at a time, and put "do
+not spawn sub-agents" in each prompt.
 
 First report, one screen at most:
 
 ```
 DONE setup <trunk>@<sha>  room: <room> (<reason>)
-slots: 3 warm   backlog: <path> (<n> items)   baseline: green <cmd>
-needs: <anything only the human can do, or omit the line>
+doctor: exit <0|1>   slots: <n> warm   registry: <path> (<n> items)   baseline: <green|red|not run> <TEST_CMD>
+needs: <anything only the human can do, e.g. the command that proves this project works; or omit the line>
 unverified: <what you did not check, e.g. setup command never run in a slot>
 ```
 
+A doctor that did not exit 0 makes the first word `BLOCKED`, not `DONE`.
 Then keep working, or stop and say that nothing is ready.

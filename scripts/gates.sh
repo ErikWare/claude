@@ -3,14 +3,15 @@
 # when it passes, and prints the evidence and exits 1 when it fails. That
 # contract is the point: a gate with a standing "known benign" output is a gate
 # nobody reads, and that is exactly how real ID collisions got past one.
+# Defaults come from .claude/desk.conf (scripts/conf.sh).
 #
-#   gates.sh ids       <registry> [base]         ID defined twice, or an ID on <base>
+#   gates.sh ids       [registry] [base]         ID defined twice, or an ID on <base>
 #                                                (default HEAD) that is gone. At landing
 #                                                pass the trunk: there HEAD IS the tree.
-#   gates.sh ids-refs  <registry> [trunk]        the same new ID filed on two unlanded
+#   gates.sh ids-refs  [registry] [trunk]        the same new ID filed on two unlanded
 #                                                refs (local AND remote) or on a ref and
 #                                                the trunk — invisible to any one tree
-#   gates.sh wip       <trunk> <ceiling> [prefix]  more unlanded item branches than allowed
+#   gates.sh wip       [trunk] [ceiling] [prefix]  more unlanded item branches than allowed
 #   gates.sh orphans   [trunk]                   a worktree holding commits no branch has
 #   gates.sh fresh     <artifact> <marker> [path...]
 #                                                build artifact missing the marker, or
@@ -18,20 +19,20 @@
 #   gates.sh unrun     "<list-tests-cmd>" "<list-run-cmd>"
 #                                                a test file on disk that no runner ran
 #
-# Environment:
-#   ID_RE   an item ID               default: [A-Z]{2,}-[0-9]+
-#   DEF_RE  a line that DEFINES one  default: ^- \*\*[A-Z]{2,}-[0-9]+\*\*
+# Config: REGISTRY (empty: the ID gates print one "skipped" line and pass),
+# ID_RE (an item ID), DEF_RE (a line that DEFINES one; default is the bullet
+# convention "- **APP-12** title"), TRUNK, WIP_CEILING, BRANCH_PREFIX.
 #
 # Exit status: 0 pass, 1 fail, 2 usage or a broken check (a broken check
 # never passes).
 
 set -u
 
-ID_RE=${ID_RE:-'[A-Z]{2,}-[0-9]+'}
-DEF_RE=${DEF_RE:-'^- \*\*[A-Z]{2,}-[0-9]+\*\*'}
+HERE=$(cd "$(dirname "$0")" && pwd -P)
+. "$HERE/conf.sh"
 
 usage() {
-	sed -n '2,21p' "$0" | sed 's/^#//' >&2
+	sed -n '2,26p' "$0" | sed 's/^#//' >&2
 	exit 2
 }
 
@@ -46,9 +47,16 @@ defs() {
 	done
 }
 
+# no_registry <given>: the ID gates are off when nothing names a registry.
+no_registry() {
+	[ -n "$1" ] && return 1
+	echo "skipped: ID gates (REGISTRY not configured)"
+	return 0
+}
+
 gate_ids() {
-	[ $# -ge 1 ] || usage
-	reg=$1
+	reg=${1-$REGISTRY}
+	no_registry "$reg" && exit 0
 	base=${2:-HEAD}
 	git rev-parse --verify --quiet "$base^{commit}" >/dev/null || { echo "BROKEN: no such base: $base"; exit 2; }
 	[ -f "$reg" ] || { echo "BROKEN: no such registry: $reg"; exit 2; }
@@ -73,9 +81,9 @@ gate_ids() {
 }
 
 gate_ids_refs() {
-	[ $# -ge 1 ] || usage
-	reg=$1
-	trunk=${2:-main}
+	reg=${1-$REGISTRY}
+	no_registry "$reg" && exit 0
+	trunk=${2:-$TRUNK}
 	tsha=$(git rev-parse --verify --quiet "$trunk^{commit}") || { echo "BROKEN: no such trunk: $trunk"; exit 2; }
 	git show "$tsha:./$reg" >"$TMP/trunk" 2>/dev/null || { echo "BROKEN: $reg not on $trunk"; exit 2; }
 	defs "$TMP/trunk" >"$TMP/trunkdefs"
@@ -119,8 +127,7 @@ gate_ids_refs() {
 }
 
 gate_wip() {
-	[ $# -ge 2 ] || usage
-	trunk=$1 ceiling=$2 prefix=${3:-wt/}
+	trunk=${1:-$TRUNK} ceiling=${2:-$WIP_CEILING} prefix=${3:-$BRANCH_PREFIX}
 	git rev-parse --verify --quiet "$trunk^{commit}" >/dev/null || { echo "BROKEN: no such trunk: $trunk"; exit 2; }
 	git for-each-ref --format='%(refname:short)' "refs/heads/$prefix" | while read -r b; do
 		git merge-base --is-ancestor "$b" "$trunk" || echo "$b"
@@ -135,7 +142,7 @@ gate_wip() {
 }
 
 gate_orphans() {
-	trunk=${1:-main}
+	trunk=${1:-$TRUNK}
 	fail=0
 	git worktree list --porcelain | awk '
 		/^worktree / { p = substr($0, 10) }

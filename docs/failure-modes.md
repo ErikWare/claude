@@ -1,4 +1,4 @@
-# Failure catalogue
+# Failure modes
 
 Every entry below cost real time in real sessions. Setting up this way of
 working cost about half of a week's model budget, and most of that went on
@@ -81,13 +81,16 @@ nothing to conflict, and every check stays green.
 backlog entry describes something else.
 
 **Guard.**
-- `gates.sh ids <backlog>` catches an ID defined twice, and an ID present on
-  HEAD but deleted by this edit (IDs are never deleted: they move to Done).
-  Run it inside every landing's test command **with the trunk as base** (`gates.sh ids BACKLOG.md main`). After the rebase HEAD *is* the branch, so a HEAD-based loss check compares the file to itself and can never fire. `test.sh` pins that trap.
+- `gates.sh ids` catches an ID defined twice in the configured REGISTRY, and
+  an ID present on HEAD but deleted by this edit (IDs are never deleted: they
+  move to Done). `land.sh` runs it on every landing **with the trunk as base**
+  (`gates.sh ids $REGISTRY $TRUNK`). After the rebase HEAD *is* the branch, so
+  a HEAD-based loss check compares the file to itself and can never fire.
+  `test.sh` pins that trap.
 - **The deeper point: both of those checks look at one tree.** A collision
   between two *unlanded* branches is invisible to both until the merge. Two of
   the six were caught only by someone enumerating IDs across every local and
-  remote ref by hand. `gates.sh ids-refs <backlog> <trunk>` is that
+  remote ref by hand. `gates.sh ids-refs` (registry and trunk from the config) is that
   enumeration as a script. It walks every local and remote ref, takes the IDs
   each one newly defines, and fails when two refs, or a ref and the trunk,
   file different items under one ID. Run it **before assigning a new ID**,
@@ -154,7 +157,7 @@ ceiling.
 **Guard.**
 - `release.sh`, then the session ends itself. In the Dispatch room nobody else
   will close it.
-- `gates.sh wip <trunk> <ceiling>` refuses to let the desk brief a fourth
+- `gates.sh wip` (TRUNK and WIP_CEILING from `.claude/desk.conf`) refuses to let the desk brief a fourth
   item.
 - `census.sh` prints `WIP n/ceiling` at every boot, so the number is
   measured, not remembered.
@@ -194,8 +197,8 @@ carries a path, not a paragraph. A path can't be half-delivered.
 
 ### 10. A stale build that reports success
 
-**Failure.** A mobile app bundle was three days old. Every build command
-exited zero, and nothing anywhere said the bundle was stale.
+**Failure.** A build artifact was three days old. Every build command
+exited zero, and nothing anywhere said the artifact was stale.
 
 **Signature.** The shipped artifact lacks a string that the latest source
 change introduced.
@@ -214,10 +217,10 @@ most of an hour. The check that would have caught it existed, and took
 
 **Signature.** The trunk turns red with no landing in between.
 
-**Guard.** The desk's own commits go through the same gate command as
-landings. Ideally, CI runs the gates on every push. CI is the one fix that
+**Guard.** The desk's own commits go through the same gate steps as
+landings (`doctor.sh --run` runs TEST_CMD on the trunk). Ideally, CI runs the gates on every push. CI is the one fix that
 **doesn't depend on anyone suspecting anything**, and that's the whole class
-of failure this catalogue is about.
+of failure this document is about.
 
 ---
 
@@ -232,8 +235,8 @@ well-tested part.
 
 On record: one campaign caught 17 of 17. Another caught 8 of 12, and its **4
 survivors were the valuable result**. An index mapping could be reversed with
-53 of 53 tests green. A whole scoring axis could be deleted with all 94
-scoring tests passing. A loop bound could be halved unnoticed. An exported
+53 of 53 tests green. An entire rule category could be deleted with all 94 of
+its tests passing. A loop bound could be halved unnoticed. An exported
 fallback constant was unprotected.
 
 This kit holds its own scripts to the same standard. Of 21 hand-written
@@ -249,7 +252,7 @@ longer counts as a collision, and census now reports over-ceiling.
 
 ### Resolve versus refuse
 
-This is the desk's rule for merge conflicts, and it is in `desk.md`. The desk
+This is the desk's rule for merge conflicts, and it is in the `desk` skill. The desk
 may resolve a conflict **when a mechanical proof predates the resolution**. It
 must refuse **when the resolution decides semantics**. A check invented while
 looking at the conflict is the desk grading its own paper.

@@ -37,7 +37,7 @@ writing the check first.
 ### Sharpened from the starting position
 
 - **"Rebases are mechanical" is only true for clean ones.** A rebase with a
-  conflict is a semantic decision (see resolve-vs-refuse in `desk.md`). The
+  conflict is a semantic decision (see resolve-vs-refuse in the `desk` skill). The
   rule for a cheap model: if the rebase conflicts, abort and report
   `BLOCKED`. **Never resolve.** The resolution goes up a tier, or back to the
   contributor.

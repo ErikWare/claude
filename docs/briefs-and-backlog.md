@@ -69,12 +69,17 @@ introduces a prefix registers it.
   burned: commit history, code anchors and reports all refer to it.
 - **New items take the next free number in their prefix**, but "free" means
   free across *every ref*, not just this tree. Run
-  `gates.sh ids-refs BACKLOG.md <trunk>` before assigning one.
+  `gates.sh ids-refs` (registry and trunk from `.claude/desk.conf`) before
+  assigning one.
 - **On a collision at merge, the first to land keeps the number.** The later
   one is renumbered, which is a mechanical fix the desk may make (see
-  resolve-vs-refuse in `desk.md`).
+  resolve-vs-refuse in the `desk` skill).
 - **An item is defined by a line of the form** `- **APP-12** title`. That's
-  the shape `gates.sh ids` looks for. Override `DEF_RE` if yours differs.
+  the default shape the ID gates look for, in the default registry
+  `BACKLOG.md`. Both are configurable in `.claude/desk.conf`: `REGISTRY` names
+  the file (empty turns the ID gates off), `ID_RE` matches an ID and `DEF_RE`
+  matches a line that defines one. A registry of `* [OPS-3] title` lines, for
+  example, is `DEF_RE='^\* \[[A-Z]{2,}-[0-9]+\]'`.
 
 **Code anchors.** `// TODO(APP-12): short what`. A test that fails when an
 anchor names an ID the backlog doesn't have is cheap, and it catches the case

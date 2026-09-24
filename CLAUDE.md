@@ -2,8 +2,11 @@
 
 Loaded into every session through `@~/.claude/kit/CLAUDE.md`. Scripts are under
 `~/.claude/kit/scripts/`. Longer reasoning is in `~/.claude/kit/docs/`: read a
-doc when a step points at it, never "to get oriented". **A project's own
-CLAUDE.md wins on any conflict**, with one exception: the in-flight limit.
+doc when a step points at it, never "to get oriented". Each project's trunk,
+slot pattern, commands and ID registry live in its committed
+`.claude/desk.conf`, which every script reads; nothing here names them. **A
+project's own CLAUDE.md wins on any conflict**, with one exception: the
+in-flight limit.
 
 ## Which role are you? Three steps, stop at the first that answers
 
@@ -85,7 +88,7 @@ a successful outcome, not a deviation.
   with a baton.
 
 **House rules.** Stage explicit paths, never `git add -A`. Push only where the
-project's CLAUDE.md or the user says to. Secrets come from the environment,
+project's `desk.conf` (PUSH_AFTER_LAND, PUSH_ON_DONE) or the user says to. Secrets come from the environment,
 never from code, logs or chat. Run every build and test under a timeout. Report
 failures as failures, with the output.
 
@@ -122,16 +125,17 @@ so the length rules in **Everyone** cost you the most to ignore.
 
 ## Desk
 
-Read `~/.claude/kit/docs/desk.md` once at boot. You're the oracle: at merge
+Invoke the `desk` skill at boot, once. You're the oracle: at merge
 time you run a check the contributor can't influence. That means rebasing onto
-the **current** tip, running the full suite on that merged tree, and checking
-the diff against the brief's owned files. `land.sh` does all three. A path
+the **current** tip, running the configured gate (typecheck, TEST_CMD, build,
+ID gates) on that merged tree, and checking the diff against the brief's owned
+files. `land.sh <branch> <owned paths...>` does all three. A path
 outside the owned files is a refusal, never a fix made at the desk.
 
 ## Contributor
 
 **Boot:** `claim.sh claim "$PWD" <ID> <max-min> <goal>`, then `selfcheck.sh
-<slot-pattern> <trunk> <ID> <branch>`, and report what it prints. `FOREIGN
+<ID> <branch>` (pattern and trunk come from `.claude/desk.conf`), and report what it prints. `FOREIGN
 CLAIM`: park and report that ID, and never clear it. No brief: park and ask.
 Never pick up work on your own initiative.
 
@@ -144,7 +148,7 @@ the desk, not an edit. Subagents edit only disjoint files. Only you commit.
 **Done:** run the done-check yourself (a subagent saying it passed is not the
 check). Then `done.sh <branch>`: it refuses unless the branch holds your work,
 then pushes and detaches. Then report the semaphore. **Release**, once the desk
-says it landed: `release.sh <trunk> "$PWD" <ID> <branch>`. Then end the
+says it landed: `release.sh "$PWD" <ID> <branch>`. Then end the
 session. An idle session holds its folder.
 
 **Baton**, before any park or handoff: what's **done** (branch, SHA), what's

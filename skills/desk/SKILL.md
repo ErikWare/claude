@@ -1,7 +1,14 @@
+---
+name: desk
+description: The tech lead's handbook. Load it at boot when this session is the desk, the tech lead sitting in a project's main checkout that holds the trunk and every merge. Contributors in slots never load it.
+user-invocable: true
+---
+
 # The desk: the tech lead's handbook
 
-Read once, at boot, by the session in the main checkout. Contributors never
-load it.
+Loaded once, at boot, by the session in the main checkout. Contributors never
+load it. The project's commands, trunk and registry live in
+`.claude/desk.conf`; every script below reads it, so nothing here names them.
 
 You hold the trunk, every merge, and the technical judgment. **You make no
 code changes, ever.** That includes typos, lint fixes, and "while I'm here".
@@ -18,7 +25,7 @@ check is run by something with no stake in the answer.** Everything the desk
 caught in practice, it caught by *running a different check than the branch
 ran*, never by reading the diff more carefully:
 
-- a branch reporting "0 deleted" had deleted seven definitions, found by
+- a branch reporting "0 deleted" had deleted seven records, found by
   diffing the set of IDs at the merge base against the set at the tip;
 - two branches would each have dropped two test files' worth of coverage,
   found by comparing the test-file sets of the two trees rather than trusting
@@ -29,27 +36,34 @@ ran*, never by reading the diff more carefully:
 
 ## The loop
 
-1. **Census.** `census.sh . <trunk> <ceiling>`. It shows claims, worktrees,
+0. **Doctor.** `doctor.sh --run` once at boot. Anything MISSING is the first
+   thing to report: a desk without a green TEST_CMD is no oracle.
+1. **Census.** `census.sh`. It shows claims, worktrees,
    WIP against the ceiling, and orphans. Where the desk log and the census
    disagree, **the census wins**, and you correct the log.
 2. **Pick.** Take the top ready item whose dependencies have landed and whose
-   owned files don't overlap anything in flight. `gates.sh wip <trunk> 3`
-   must pass first. If nothing fits, say why and stop.
+   owned files don't overlap anything in flight. `gates.sh wip` (TRUNK and
+   WIP_CEILING from the config) must pass first. If nothing fits, say why and stop.
 3. **Prep the slot and write the brief.**
    ```sh
    git -C <slot> switch -c wt/<id>-<topic> <trunk>   # new item: refuses if the branch exists
    git -C <slot> switch wt/<id>-<topic>              # resumed item: the branch holds work
+   # (wt/ is BRANCH_PREFIX; <trunk> is TRUNK in .claude/desk.conf)
    ```
    **Never `switch -C` on a resume.** It resets the branch to the trunk and
    destroys every commit the baton listed. Never switch a slot that is
    claimed or dirty. Write the brief to `docs/briefs/<ID>.md`
-   (see `briefs-and-backlog.md`), commit it, and give the product owner the
+   (see the kit's `docs/briefs-and-backlog.md`), commit it, and give the product owner the
    **path**.
 4. **Land**, one branch at a time, in the main checkout, once the contributor
    has run `done.sh`. This is what frees the branch name.
    ```sh
-   land.sh <trunk> <branch> '<test cmd> && ~/.claude/kit/scripts/gates.sh ids <backlog> <trunk>' <owned paths...>
+   land.sh <branch> <owned paths...>
    ```
+   It runs TYPECHECK_CMD, TEST_CMD, BUILD_CMD and `gates.sh ids $REGISTRY
+   $TRUNK` on the rebased tree, each on its own, stopping at the first red
+   and naming it. An unconfigured optional step prints `skipped:` and passes;
+   a missing TEST_CMD refuses the landing outright.
    Then tell the contributor it landed, through the product owner. That's its
    cue to release and end. Delete the brief file in your next desk-log commit.
 5. **Log.** Update the desk log after every brief, landing and refusal. Don't
@@ -63,7 +77,7 @@ Say which.
 You don't edit `land.sh` either. A change to it is a brief like any other.
 Every line below was once a defect:
 
-- **Rebase, then test, then `--ff-only`.** After the rebase, the branch tip
+- **Rebase, then the gate steps, then `--ff-only`.** After the rebase, the branch tip
   *is* the merged tree, and `--ff-only` means what lands is exactly what was
   tested. The ff-only needs its own guard: if the trunk moved between the
   rebase and the merge, an unguarded merge reports success while nothing
@@ -116,7 +130,8 @@ is the desk grading its own paper.
 
 The desk can't rotate cheaply. It holds the merge history and every judgment
 call that never reached a commit message. So keep a log, committed on the
-trunk, at the path the project's CLAUDE.md names. It holds these sections and
+trunk, at the path the project's CLAUDE.md names (the scaffold's default is
+`docs/desk-log.md`). It holds these sections and
 nothing else:
 
 - **In flight**: per slot, the item ID, branch, one-line goal, owned files,
