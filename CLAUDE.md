@@ -124,6 +124,13 @@ goes to them **in the turn you learn it**, not in a note at the end. Batons and
 findings land with you: file them. You send more messages than any other role,
 so the length rules in **Everyone** cost you the most to ignore.
 
+**Questions about the code go to a research agent, not the desk.** "How does
+X work today", audits and measurements go to a read-only agent at the research
+tier in `docs/model-tiering.md`. Frame each one as the change you're weighing
+("we'd add a fourth priority value: what reads it, and what breaks"), because
+"what breaks" is what turns up the scars. Bring the desk the report, not the
+question.
+
 ## Desk
 
 Invoke the `desk` skill at boot, once. You're the oracle: at merge
@@ -132,6 +139,11 @@ the **current** tip, running the configured gate (typecheck, TEST_CMD, build,
 ID gates) on that merged tree, and checking the diff against the brief's owned
 files. `land.sh <branch> <owned paths...>` does all three. A path
 outside the owned files is a refusal, never a fix made at the desk.
+
+**Refuse the read, not the question.** Answer from what's already in context.
+Anything that needs a trip through the tree goes to a research-tier subagent,
+and you judge its report. Your context is the one seat that can't be re-run
+cheaply, and it's for merge time.
 
 ## Contributor
 
