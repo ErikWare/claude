@@ -4,10 +4,37 @@ Subagents are spawned with a model chosen per task (the `model` parameter on
 the Agent tool, or `model:` in a subagent file: `haiku`, `sonnet`, `opus`,
 `fable`, a full model ID, or `inherit`). This page gives the selection rules.
 
-**Assumption, stated:** the strength ordering used here is
-**fable > opus > sonnet > haiku**. Check it against the models your account
-lists. Where this page says *strongest*, it means the top of whatever you
-actually have.
+## The ladder, with prices (checked 2026-09-24)
+
+| Tier | ID to use | $/MTok in/out | vs. floor | Context |
+|---|---|---|---|---|
+| fable | `claude-fable-5-1` | 10 / 50 | 10× | 1M |
+| opus | `claude-opus-5-5` | 4 / 20 | 4× | 1M |
+| sonnet | `claude-sonnet-5` | 2 / 10 | 2× | 1M |
+| haiku | `claude-haiku-4-5` | 1 / 5 | 1× | 200K |
+
+Output is 5× input at every tier, so one ratio covers both. **Each step is
+about 2×, except fable at 2.5× opus.** Tiering one step too high costs double;
+the top costs ten times the floor. That is the number the rule below trades
+against.
+
+**Superseded, so not choices:** `claude-fable-5` (same price as 5.1),
+`claude-sonnet-4-6` (1.5× Sonnet 5), `claude-opus-4-7`, `claude-opus-4-6`.
+`claude-mythos-5-1` matches Fable 5.1 but needs program access. Two rows keep a
+reason to exist: `claude-opus-4-8` is the only Opus with Priority Tier, and
+`claude-opus-5` is not simply replaced by `claude-opus-5-5` — **5.5 defaults to
+`medium` effort where 5 defaults to `high`**, so the move is 20% cheaper only
+if you set effort explicitly.
+
+**The alias hides the ID; a session doesn't.** A subagent named by tier picks up
+whatever that alias maps to. A dispatched session takes a full ID, and that is
+where a stale default hides: a day of sessions ran `claude-opus-5` while
+`claude-opus-5-5` was newer and 20% cheaper. Nothing warned anyone.
+
+**Re-check, don't trust.** Prices and IDs date. `GET /v1/models` lists what the
+account can call, and the `claude-api` skill's table carries its own cached
+date. Re-check on any release note, and whenever this table is over a quarter
+old.
 
 ## The rule underneath all the others
 
@@ -32,7 +59,7 @@ writing the check first.
 | **Contributor orchestrator**: holds one item's shape, briefs subagents, runs the done-check | opus, or sonnet for small well-specified items | It has to notice when a premise is wrong. The four premise corrections on record were all orchestrators measuring instead of complying. | 1 per slot |
 | **Code edits** by a subagent, on disjoint files | sonnet. Opus for concurrency, security, data migration, or anything the suite can't see. | The done-check and the gate check this work afterwards, so a mid-tier model is enough when those checks are strong. Where they're weak, go up a tier. | ≤ 2 |
 | **Research and audit**: read the docs, measure a claim, audit a module | sonnet, or opus for adversarial audits ("prove this claim wrong") | Its output feeds a decision, and nobody re-derives it. But it doesn't touch the trunk. | **1–2, never wide** |
-| **Mechanical**: a clean rebase, renumbering an ID, moving an item to Done, reformatting, filling a template | haiku | A script verifies the result: rebase status, `gates.sh ids`, the suite. | ≤ 2 |
+| **Mechanical**: a clean rebase, renumbering an ID, moving an item to Done, reformatting, filling a template | haiku | A script verifies the result: rebase status, `gates.sh ids`, the suite. Its 200K window is the smallest on the ladder, so don't hand it a wide read. | ≤ 2 |
 
 ### Sharpened from the starting position
 
