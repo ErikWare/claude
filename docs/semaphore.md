@@ -1,4 +1,4 @@
-# The semaphore protocol: how an agent reports back
+# The semaphore protocol: how agents write to each other
 
 A finished subagent usually restates its brief, narrates each step, lists the
 files it changed, and only then says it's done. The receiver needed one line
@@ -72,7 +72,7 @@ the product owner can file it without asking.
 that names its gaps is the only kind that can be trusted. A report with no
 gaps is either exhaustive or unexamined, and from the outside you can't tell
 which. The reports that held up were the ones that volunteered things like
-"analysis of rendered output, nobody has listened to it", "not run on a
+"analysis of generated output, nobody has inspected it by hand", "not run on a
 device", or "the plugin wiring isn't under test". Each became a filed item
 instead of a surprise a week later. `unverified: none` is allowed only with
 the check that makes it true: `unverified: none — full suite on the rebased
@@ -162,9 +162,7 @@ reporting, not by eye.
 ## The same format, upward
 
 The desk reports to the product owner in the same format, and the product
-owner reports to the human the same way. On a phone that's the difference
-between a notification you can act on and a wall of text you can't. A batch
-of landings is one line each:
+owner reports to the human the same way. A batch of landings is one line each:
 
 ```
 DONE APP-12 main@7c1d9e0 landed
@@ -172,3 +170,64 @@ REFUSED APP-14 wt/app-14-cache 2b8e441 local
 why: out of scope — touched src/db/schema.ts (not in owned files); sent back
 unverified: APP-14's own tests not run; refused before the suite
 ```
+
+## Outbound: the dispatch prompt, and messages to people
+
+Everything above governs what comes *back*. The same arithmetic governs what
+goes *out*, and it is worse there, because the sender writes the same waste
+repeatedly while the receiver pays for it for the rest of its session.
+
+One real day of dispatch, as reported by the product owner who did it (their
+count, not a measurement of the transcript):
+
+| What happened | Cost |
+|---|---|
+| 400–600 words of standing context — room, roles, project history — pasted into each of 4 dispatch prompts | ~700 tokens est. each, ~2.9k total, none of it new to the receiver |
+| A running session polled ~10 times during a 320s suite, each poll returning the same stale preamble | 10 calls where 1 wait would have done |
+| Multi-paragraph updates to a human reading them on a phone | The first line was the message; the rest was scrolled past |
+
+None of it was forbidden. That was the gap, and the boot file now closes it in
+three lines. The reasoning is the part worth keeping:
+
+**Standing context is a file, not a paragraph.** Anything true for longer than
+one message — the room, the role, how this project works — belongs at a path,
+and the prompt cites the path. Pasting it is not "making sure": the receiver's
+boot file already loaded the rules, and a second copy that has drifted from the
+first is worse than no copy, because now the receiver has to decide which one
+governs. A dispatch prompt is the brief's path, the role, and any delta that
+isn't in the repo yet. Three lines is a normal length.
+
+**A running session is not a status API.** Polling costs a call and returns
+the preamble you already hold. Worse, a short wait teaches you nothing a long
+wait wouldn't: a 320s suite is not 32s of information ten times. Wait for the
+report, which arrives as one line you can verify.
+
+**A person reading on a phone is the strictest receiver you have.** They can't
+grep, they can't scroll back to a brief, and they are the one receiver whose
+attention you can't measure. Lead with the outcome or the ask. The `premise:`
+and `finding:` fields still apply — those are the lines a human most needs —
+but "just to confirm my understanding of what you asked" is not a line.
+
+### Worked: a dispatch prompt
+
+**Before** (illustrative, reconstructed from the pattern; the ellipses stand in
+for a 400–600 word original, so the measured text here understates it — 66
+words, 344 chars, **~86 tokens est.**):
+
+> Hi! Quick context before the task: you're a contributor working in a slot,
+> which means you own one briefed item on one branch. Remember the desk holds
+> the trunk and you never merge or push to it… The project is the proposal
+> pipeline, which has a backend, a dashboard and an iOS capture app… For this
+> item we want you to look at the retry logic…
+
+**After** (17 words, 116 chars, **~29 tokens est.**):
+
+```
+Contributor. Brief: docs/briefs/APP-12.md
+delta: the suite now takes 320s — budget for it, don't shorten the timeout
+```
+
+About 66% smaller on the shown text, and far more than that on the real one:
+600 words of preamble is ~870 tokens est. against 29. The after is also the
+more reliable of the two, because the brief at that path is the version the
+desk wrote, and it can't drift in transit.

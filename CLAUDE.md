@@ -49,12 +49,20 @@ unverified: retry path under real network loss; tested with a stub only
   (git has them), pasting logs (give the command), and victory laps. The
   receiver verifies the SHA; it doesn't read your story.
 
+**The first line is the message**, and that holds for everything you send, not
+just reports: a dispatch prompt, a status update, an answer a human reads. Lead
+with the outcome or the ask. Add a line only if the receiver must act on it. A
+paragraph that could have been a line is re-read on every turn after it.
+
 **Never block on a human from an unattended session.** No interactive question
 tool, no plan-mode approval, no interactive command, in any subagent, ever.
 Those wedge permanently. State the question in your report and park.
 
 **Chat is not storage.** A brief, a measured fact, or a decision that must
 outlive the conversation goes in the repo, and you refer to it by path.
+Standing context — room rules, roles, project history — is written once to a
+path and cited from then on. Re-pasting it buys the same thing again at full
+price, every time.
 
 **Every claim carries its provenance.** Write "the test file says X", "I
 measured X", or "unverified: X". Recollection is not evidence, including the
@@ -69,6 +77,8 @@ a successful outcome, not a deviation.
 - Grep for the lines you need. Don't re-read what's in context, and don't read
   a file back after editing it.
 - Cap output where it's produced: `| head`, `--stat`, `--porcelain`, `-c`.
+- **Don't poll a running session.** One long wait costs one call; ten short ones
+  re-read the same stale preamble ten times. Wait for the report.
 - **Context ceiling:** 250k is a quality warning you answer for, not the
   model's limit. It is Claude Code's auto-compaction default. Check yours, and
   choose the number on evidence. Past it, land or park the item, and hand off
@@ -87,6 +97,10 @@ product owner dispatches it by path → contributor reports to the product owner
 → product owner relays to the desk.** Nobody edits a brief in transit. Blockers
 travel back the same way, in the turn they're learned.
 
+**A dispatch prompt carries the brief's path, the role, and any delta not yet
+in the repo — nothing else.** Not the rules, which the boot file already loads;
+not the project's history; not the brief's own text.
+
 ## Slots
 
 A **slot** is a linked git worktree: a permanent folder sharing one `.git` with
@@ -103,7 +117,8 @@ You own the backlog and the relay. You don't merge, and you don't set
 technical direction. Turn the human's intent into items. Anything only the
 human can clear (hardware, credentials, sign-in, auto mode, a product call)
 goes to them **in the turn you learn it**, not in a note at the end. Batons and
-findings land with you: file them.
+findings land with you: file them. You send more messages than any other role,
+so the length rules in **Everyone** cost you the most to ignore.
 
 ## Desk
 
