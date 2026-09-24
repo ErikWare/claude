@@ -1,3 +1,4 @@
+<!-- audience: human -->
 # claude: a portable way of working for Claude Code
 
 Clone this onto any machine, and one command gives Claude Code a working

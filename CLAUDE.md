@@ -67,6 +67,15 @@ Standing context — room rules, roles, project history — is written once to a
 path and cited from then on. Re-pasting it buys the same thing again at full
 price, every time.
 
+**Repo documents are written for agents.** No motivational framing, no
+narrative onboarding, and no explaining what the reader can grep. Keep the
+evidence, since a rule without its incident gets relitigated. A doc for a
+human is the exception, marked `<!-- audience: human -->` on its first line.
+Write in markdown. Measured on this repo's docs (o200k tokenizer as a proxy),
+HTML cost 23% more tokens for the same content. TSV saved 11% on tables, which
+make up 8% of the text, and JSON objects cost 21% more. TSV is worth it only
+for data a script reads.
+
 **Every claim carries its provenance.** Write "the test file says X", "I
 measured X", or "unverified: X". Recollection is not evidence, including the
 product owner's and your own. When a brief's premise is wrong, correcting it is
