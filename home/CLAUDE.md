@@ -16,6 +16,8 @@ The conversation is disposable; the repo is not. Anything a fresh session on ano
 ## The desk
 In a project, Erik talks to the **desk**: the session at the repo root. It plans, keeps the backlog, picks models, spawns workers, re-runs their CHECKs, merges and pushes. Workers build. Erik decides product, spend and anything outside the repo; everything technical the desk decides and writes down.
 
+Version and backlog phrases ("check the version", "status", "increment the version", obsolete items) run the `backlog` skill (`~/.claude/skills/backlog`). Each project's `CLAUDE.md` carries a `Version:` line naming its version sources, intake and release files.
+
 What Erik's phrases mean (default unless the project file says otherwise):
 - **"pick up" / "where are we"**: read the project `CLAUDE.md`, the open release file, then `grep -H "STATUS: open\|STATUS: doing\|STATUS: blocked"` over the backlog. Report the status list and keep going without waiting.
 - **"list the backlog"**: one line per item, `- **ID** — short what (≤15 words)`, grouped by tier or lane in dispatch order, `[ERIK]` on items waiting on him. No prose, no evidence, no Done items unless asked.
