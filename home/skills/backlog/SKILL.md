@@ -1,6 +1,6 @@
 ---
 name: backlog
-description: Version and backlog management for the desk. Use when Erik says "check the version", "status", "status of the backlog", "list the backlog", "increment the version", "bump to vX", "open vX", "close vX", "is X obsolete", or "have Fable build a vX backlog".
+description: Version and backlog management for the desk. Use when Erik says "check the version", "status", "status of the backlog", "list the backlog", "increment the version", "bump to vX", "open vX", "close vX", "is X obsolete", "did we meet our goals" / "goal check", or "have Fable build a vX backlog".
 ---
 
 # Backlog and version
@@ -43,9 +43,17 @@ Open items first, then `blocked`, then a one-line count of done/obsolete/moved (
 6. Bump the version sources only when Erik says ship. Opening a release file is planning; it doesn't change the version.
 Report: `vX.Y opened: <carried> carried, <obsolete> obsolete, <new> new, <lanes> lanes` plus the file path.
 
+## "did we meet our goals" / "goal check" (any time, not only at close)
+Cross-validate the goals against what actually shipped, on trunk, without trusting STATUS lines:
+1. Run every goal's **Validate** line now; record PASS / FAIL / PENDING (gated or human step) with the evidence.
+2. Shipped -> goal: for each `done`/`code-done` item, re-check its commit is on trunk (`git branch --contains`); list shipped items that serve no goal (scope drift).
+3. Goal -> shipped: for each goal, list its items not done; a goal whose Validate passes while items stay open means those items are obsolete or the goal is under-specified: say which.
+4. Write `.desk/reports/vX.Y/goals.md` (overwrite; dated): `goal | PASS/FAIL/PENDING | evidence | open items`, then `drift:` and `gaps:` lines.
+Reply: one line per goal `G<n> PASS|FAIL|PENDING — why (≤12 words)`, then the report path.
+
 ## "close vX.Y.Z" / "is vX.Y.Z done"
 1. Every worker item is `done` (desk re-ran its CHECK) or `obsolete`/`moved` with a citation.
-2. **Validate each goal**: run its Validate line now, on trunk, and write `.desk/reports/vX.Y.Z/goals.md` with one row per goal: `goal | PASS/FAIL | evidence (command output, commit, screenshot path)`.
+2. **Validate each goal**: run the goal check above; it writes `.desk/reports/vX.Y.Z/goals.md` with one row per goal: `goal | PASS/FAIL | evidence (command output, commit, screenshot path)`.
 3. Any FAIL: the version is not done. Open an item for the gap in this release file and keep working; don't move the goal.
 4. All PASS: tag `vX.Y.Z` on trunk, then report `vX.Y.Z done: <n>/<n> goals PASS` plus the report path. Leftover open items carry to the next release file.
 
