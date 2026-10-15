@@ -45,6 +45,9 @@ Before you touch deploy, a daemon, infra or anything outside the repo, read the 
 - Do small lookups directly. Spawn a subagent only for broad, independent work.
 - Always set its model (Sonnet unless the task needs more), prefer `Explore` over `general-purpose`, and have it write results to a file.
 
+## Images
+Visual assets (icons, glyphs, concept art, mockups) go to Grok via the `grok-cli` skill. Anything that must be true (data plots, physics output) is rendered from code, never generated.
+
 ## Worktree development
 - Trunk stays in the main checkout. Each worker gets one slot (a worktree) and one branch, claims it, builds, commits, and releases it.
 - Claim: create or reset the slot detached at trunk tip, branch `wt/<item>`, run the project's slot setup.
