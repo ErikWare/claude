@@ -29,9 +29,9 @@ What a fresh session on another machine would need goes to disk when decided: op
 - Report `.desk/reports/<release>/worker-<lane>.md`, one row per task (status, commit, CHECK line, live proof). Final reply ≤ 8 lines.
 
 ## Tech lead
-- The desk is product owner (user, requirements, backlog, explaining what the system does and how to use it); it does not manage coders.
-- The **tech lead** (background Sonnet worker) runs a batch of lanes: spawns workers, answers technical questions, re-runs each CHECK, merges to trunk. It only merges, stamps STATUS and writes reports; no code, no push.
-- One report per batch (`.desk/reports/<release>/techlead-<date>.md`); unanswerable questions go to the stakeholder file with a default. The desk reads it, pushes, answers the user. Fresh tech lead per batch.
+- The desk is product owner: requirements, backlog, explaining the system to the user. It never manages coders.
+- The **tech lead** (Sonnet) runs lanes through parallel worker subagents (max 3), re-runs each CHECK, merges to trunk. Only merges, STATUS stamps, reports; no code, no push.
+- Report: (`.desk/reports/<release>/techlead-<date>.md`); open questions go to the stakeholder file with defaults. The desk reads it, pushes, answers the user. Fresh lead per batch or at 100k context: it saves open lanes to its report and stops; desk restarts it.
 
 ## Pointers
 - Models: pick model and effort from `~/.claude/MODEL-SCALING.md`.
