@@ -108,3 +108,5 @@ build/
 *.bak
 *.orig
 *.rej
+!home/skills/tokens/
+!home/skills/tokens/*
