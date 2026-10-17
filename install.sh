@@ -11,3 +11,4 @@ for f in "$src"/*.md "$src"/skills/*; do
   ln -sfn "$f" "$dst"
   echo "linked $dst"
 done
+git -C "$(dirname "$0")" config core.hooksPath hooks

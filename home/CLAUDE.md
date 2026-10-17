@@ -44,7 +44,7 @@ What a fresh session on another machine would need goes to disk when decided: op
 - Word caps: `CLAUDE.md` <= 1000; `GOAL-DRIVEN.md`, `MODEL-SCALING.md`, `ASSETS.md` <= 300 each; a skill's `SKILL.md` <= 600.
 - One home per rule: phrase or skill procedures live in that skill; `CLAUDE.md` holds every-turn rules and pointers.
 - Rules, not reasons: no examples or rationale unless a rule is misread without them.
-- Adding means cutting: an edit past a cap cuts text first. Commits state the word delta (`wc -w`).
+- Adding means cutting: `hooks/pre-commit` refuses any file over cap; trim it, never `--no-verify`. Commits state the word delta.
 
 ## Replies
 - Address the user as "user", never by name, in replies, docs, backlog, commits and reports.

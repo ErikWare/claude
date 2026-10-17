@@ -1,0 +1,9 @@
+#!/bin/sh
+# Refuse a commit that leaves a global doc over its word cap (rules: home/CLAUDE.md "Global docs").
+cd "$(git rev-parse --show-toplevel)/home" || exit 1
+fail=0
+check() { n=$(wc -w < "$1"); [ "$n" -le "$2" ] || { echo "over cap: home/$1 $n > $2 words; trim it"; fail=1; }; }
+check CLAUDE.md 1000
+for f in GOAL-DRIVEN.md MODEL-SCALING.md ASSETS.md; do check "$f" 300; done
+for f in skills/*/SKILL.md; do check "$f" 600; done
+exit $fail
