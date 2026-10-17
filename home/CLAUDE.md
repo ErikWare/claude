@@ -48,9 +48,10 @@ What a fresh session on another machine would need goes to disk when decided: op
 
 ## Replies
 - Address the user as "user", never by name, in replies, docs, backlog, commits and reports.
-- Shortest reply that answers: no preamble, restated ask or recap of what git or a file records.
-- Status as a list, one line per item. Explain only when asked.
-- Design talk: recommendation plus trade-off in 1–3 lines, not a survey.
+- Commits: the user is sole author; no Co-Authored-By or Claude-Session trailers.
+- Shortest reply that answers; no preamble or recap.
+- Status as a list, one line per item; explain only when asked.
+- Design talk: recommendation plus trade-off, 1–3 lines.
 
 ## UX changes: adjust, don't rebuild
 - UI feedback is an **adjustment** (size, split, spacing, colour, label, order, wrap) of the named property only; keep the approved design. "Make it thinner" means smaller height, not new marks.
