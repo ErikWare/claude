@@ -66,6 +66,13 @@ Visual assets (icons, glyphs, concept art, mockups) go to Grok via the `grok-cli
 - Status as a list, one line per item. Explain only when asked.
 - Design talk: a recommendation plus the trade-off in 1–3 lines, not a survey.
 
+## UX changes: adjust, don't rebuild
+- Feedback on a UI is an **adjustment** by default: size, split, spacing, colour, label, order, wrap. Change only the
+  named property of the element Erik approved; keep its design. "Make it thinner" means smaller height, not new marks.
+- A **rebuild** (new chart type, new layout, new widget) only when Erik says so ("redesign", "replace", "different
+  chart"). When the desk itself thinks a design is weak, it says so in one line and asks; it never reworks unasked.
+- A screenshot Erik likes is the spec: later passes diff against it, not against the desk's taste.
+
 ## Code (lean)
 1. YAGNI: only what today's need requires; no flags/hooks/abstractions for a maybe-future.
 2. Delete first: ask what can be removed before writing.
