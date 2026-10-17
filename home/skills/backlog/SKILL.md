@@ -1,24 +1,24 @@
 ---
 name: backlog
-description: Version and backlog management for the desk. Use when Erik says "check the version", "status", "status of the backlog", "list the backlog", "increment the version", "bump to vX", "open vX", "close vX", "is X obsolete", "did we meet our goals" / "goal check", or "have Fable build a vX backlog".
+description: Version and backlog management for the desk. Use when the user says "check the version", "status", "status of the backlog", "list the backlog", "increment the version", "bump to vX", "open vX", "close vX", "is X obsolete", "did we meet our goals" / "goal check", or "have Fable build a vX backlog".
 ---
 
 # Backlog and version
 
-One skill for "what version are we on", "where does the work stand" and "move to the next version". The project's `CLAUDE.md` names its files; this skill sets the method. If the project file has no `Version:` line, ask Erik once, then write that line.
+One skill for "what version are we on", "where does the work stand" and "move to the next version". The project's `CLAUDE.md` names its files; this skill sets the method. If the project file has no `Version:` line, ask the user once, then write that line.
 
 ## Where things live (project `CLAUDE.md` declares them)
 - **Version sources**: every place a version number lives (package.json, Xcode `MARKETING_VERSION`/`CURRENT_PROJECT_VERSION`, `VERSION`, tags).
 - **Intake**: where new finds land (`BACKLOG.md` or `backlog/<date>.md`).
 - **Release file**: one per version, `v<X.Y.Z>.md`, the only work list while that version is open: header, **Goals**, Lanes, Decisions, then items in the GOAL-DRIVEN brief with `WHY:` and `STATUS:`.
-- **Stakeholder backlog**: everything that needs Erik (decisions, accounts, hosting, device runs, store paperwork), e.g. `STAKEHOLDER.md`. It never blocks a release: each entry carries a **default** the desk builds on until Erik answers. A release file never says "blocked on Erik"; that item is `moved <date> -> STAKEHOLDER` instead.
-- **Watch list**: monitor tasks, not stories (default `backlog/WATCH.md`). One line per watch: `- **W-<id>** — what · CHECK: <cmd> · due <date time> · from <item>@<commit> · STATUS: watching | pass <date> | fail <date> -> <story ID>`. Propose each watch to Erik with its reasoning and add it only on his yes; never poll or wait for one (one-shot reminder at the due time instead). Watches never sit in a release file and never block a close; a failed watch becomes a story in intake. "status" ends with one line: `watches: <n> watching, <n> due, <n> failed`.
+- **Stakeholder backlog**: everything that needs the user (decisions, accounts, hosting, device runs, store paperwork), e.g. `STAKEHOLDER.md`. It never blocks a release: each entry carries a **default** the desk builds on until the user answers. A release file never says "blocked on the user"; that item is `moved <date> -> STAKEHOLDER` instead.
+- **Watch list**: monitor tasks, not stories (default `backlog/WATCH.md`). One line per watch: `- **W-<id>** — what · CHECK: <cmd> · due <date time> · from <item>@<commit> · STATUS: watching | pass <date> | fail <date> -> <story ID>`. Propose each watch to the user with its reasoning and add it only on the user's yes; never poll or wait for one (one-shot reminder at the due time instead). Watches never sit in a release file and never block a close; a failed watch becomes a story in intake. "status" ends with one line: `watches: <n> watching, <n> due, <n> failed`.
 
 ## Version goals
-Every release file opens with **Goals**: 3–6 outcomes, each phrased as "when vX.Y.Z ships, the app does …" (what a user or operator can observe, not a list of tasks), each with a **Validate:** line (the item CHECKs it rests on plus one end-to-end proof: a walkthrough, a measurement, a command). Erik signs the goals off when the file opens; they are the version's definition of done. Every item serves a goal, and an item that serves none is deferred. Human-only proof (a device run) is recorded as evidence from the stakeholder backlog and never blocks the tag.
+Every release file opens with **Goals**: 3–6 outcomes, each phrased as "when vX.Y.Z ships, the app does …" (what a user or operator can observe, not a list of tasks), each with a **Validate:** line (the item CHECKs it rests on plus one end-to-end proof: a walkthrough, a measurement, a command). The user signs the goals off when the file opens; they are the version's definition of done. Every item serves a goal, and an item that serves none is deferred. Human-only proof (a device run) is recorded as evidence from the stakeholder backlog and never blocks the tag.
 
 ## Status values
-`open` · `doing` · `blocked <date> (<what Erik must give>)` · `done <date> (<commit>: <proof>)` · `obsolete <date> (<superseding ID or commit>: <why>)` · `moved <date> -> v<X.Y> <ID>`.
+`open` · `doing` · `blocked <date> (<what the user must give>)` · `done <date> (<commit>: <proof>)` · `obsolete <date> (<superseding ID or commit>: <why>)` · `moved <date> -> v<X.Y> <ID>`.
 Only `done` and `obsolete` close an item. No soak status: the time proof is a watch row (below). Never delete an item; change its STATUS.
 
 ## "check the version"
@@ -32,7 +32,7 @@ drift: <any sources that disagree, or "none">
 
 ## "status" / "status of the backlog"
 From the open release file (or the intake if none is open), one line per item in lane or tier order:
-`- **ID** — short what (≤15 words) · <status>` plus `[ERIK]` when it waits on him.
+`- **ID** — short what (≤15 words) · <status>` plus `[USER]` when it waits on the user.
 Open items first, then `blocked`, then a one-line count of done/obsolete/moved ("+ 23 done, 4 obsolete"). List the done ones only when asked ("status with done"). Never paraphrase a status into "basically done": verify `done` against the commit if in doubt.
 
 ## "increment the version" / "open vX.Y"
@@ -40,8 +40,8 @@ Open items first, then `blocked`, then a one-line count of done/obsolete/moved (
 2. Carry: each item not `done`/`obsolete` goes to the new release file, and the old line gets `moved <date> -> vX.Y <new ID or same ID>`.
 3. **Obsolescence pass** (Fable · low, outcome brief): for each carried item, check the code and the new version's scope. Mark `obsolete` when new work supersedes it, the code site is gone, or the premise no longer holds. Cite the superseding ID or commit. When unsure, keep it open; never mark obsolete without a citation.
 4. Fold in the intake since the last version (dedupe: same gap → keep the existing ID).
-5. Write the **Goals** first, then Lanes and Decisions, then red-team the file (specifics kept, CHECKs fail on trunk today and runnable, every item serves a goal, rework minimized) before any worker starts. Erik signs the goals off.
-6. Bump the version sources only when Erik says ship. Opening a release file is planning; it doesn't change the version.
+5. Write the **Goals** first, then Lanes and Decisions, then red-team the file (specifics kept, CHECKs fail on trunk today and runnable, every item serves a goal, rework minimized) before any worker starts. The user signs the goals off.
+6. Bump the version sources only when the user says ship. Opening a release file is planning; it doesn't change the version.
 Report: `vX.Y opened: <carried> carried, <obsolete> obsolete, <new> new, <lanes> lanes` plus the file path.
 
 ## "did we meet our goals" / "goal check" (any time, not only at close)
