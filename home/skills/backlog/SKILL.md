@@ -12,13 +12,14 @@ One skill for "what version are we on", "where does the work stand" and "move to
 - **Intake**: where new finds land (`BACKLOG.md` or `backlog/<date>.md`).
 - **Release file**: one per version, `v<X.Y.Z>.md`, the only work list while that version is open: header, **Goals**, Lanes, Decisions, then items in the GOAL-DRIVEN brief with `WHY:` and `STATUS:`.
 - **Stakeholder backlog**: everything that needs Erik (decisions, accounts, hosting, device runs, store paperwork), e.g. `STAKEHOLDER.md`. It never blocks a release: each entry carries a **default** the desk builds on until Erik answers. A release file never says "blocked on Erik"; that item is `moved <date> -> STAKEHOLDER` instead.
+- **Watch list**: monitor tasks, not stories (default `backlog/WATCH.md`). One line per watch: `- **W-<id>** — what · CHECK: <cmd> · due <date time> · from <item>@<commit> · STATUS: watching | pass <date> | fail <date> -> <story ID>`. Watches never sit in a release file and never block a close; a failed watch becomes a story in intake. "status" ends with one line: `watches: <n> watching, <n> due, <n> failed`.
 
 ## Version goals
 Every release file opens with **Goals**: 3–6 outcomes, each phrased as "when vX.Y.Z ships, the app does …" (what a user or operator can observe, not a list of tasks), each with a **Validate:** line (the item CHECKs it rests on plus one end-to-end proof: a walkthrough, a measurement, a command). Erik signs the goals off when the file opens; they are the version's definition of done. Every item serves a goal, and an item that serves none is deferred. Human-only proof (a device run) is recorded as evidence from the stakeholder backlog and never blocks the tag.
 
 ## Status values
-`open` · `doing` · `code-done <date> (soak until <t>)` · `blocked <date> (<what Erik must give>)` · `done <date> (<commit>: <proof>)` · `obsolete <date> (<superseding ID or commit>: <why>)` · `moved <date> -> v<X.Y> <ID>`.
-Only `done` and `obsolete` close an item. Never delete an item; change its STATUS.
+`open` · `doing` · `blocked <date> (<what Erik must give>)` · `done <date> (<commit>: <proof>)` · `obsolete <date> (<superseding ID or commit>: <why>)` · `moved <date> -> v<X.Y> <ID>`.
+Only `done` and `obsolete` close an item. No soak status: the time proof is a watch row (below). Never delete an item; change its STATUS.
 
 ## "check the version"
 Read every version source and git (`git describe --tags --always`, release branches). Reply in ≤6 lines:
@@ -46,7 +47,7 @@ Report: `vX.Y opened: <carried> carried, <obsolete> obsolete, <new> new, <lanes>
 ## "did we meet our goals" / "goal check" (any time, not only at close)
 Cross-validate the goals against what actually shipped, on trunk, without trusting STATUS lines:
 1. Run every goal's **Validate** line now; record PASS / FAIL / PENDING (gated or human step) with the evidence.
-2. Shipped -> goal: for each `done`/`code-done` item, re-check its commit is on trunk (`git branch --contains`); list shipped items that serve no goal (scope drift).
+2. Shipped -> goal: for each `done` item, re-check its commit is on trunk (`git branch --contains`); list shipped items that serve no goal (scope drift).
 3. Goal -> shipped: for each goal, list its items not done; a goal whose Validate passes while items stay open means those items are obsolete or the goal is under-specified: say which.
 4. Write `.desk/reports/vX.Y/goals.md` (overwrite; dated): `goal | PASS/FAIL/PENDING | evidence | open items`, then `drift:` and `gaps:` lines.
 Reply: one line per goal `G<n> PASS|FAIL|PENDING — why (≤12 words)`, then the report path.
