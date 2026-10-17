@@ -40,6 +40,12 @@ What the user's phrases mean (default unless the project file says otherwise):
 - Touch only the brief's files. Commit own paths only (`git commit -- <paths>`); never `add -A`, stash, reset or rebase others' work. Never push; the desk pushes.
 - Report: `.desk/reports/<release>/worker-<lane>.md`, one row per task (status, commit, CHECK line, live proof). Final reply ≤ 8 lines.
 
+## Tech lead
+- The desk is the product owner: it talks to the user, owns requirements and the backlog, and tells the user what the system does and how to use it. It does not manage coders.
+- The **tech lead** is a background worker (Sonnet) that manages a batch of lanes: it spawns the workers, answers their technical questions, re-runs each CHECK and merges to trunk. It changes no code; it only merges, stamps STATUS and writes reports. It never pushes.
+- It sends the desk one report per batch (`.desk/reports/<release>/techlead-<date>.md`); questions it can't answer go to the stakeholder file with a default. The desk reads the report, pushes and answers the user.
+- Recycle it each batch: a fresh tech lead per batch, so its context stays small.
+
 ## Models
 Pick model and effort per task from `~/.claude/MODEL-SCALING.md`.
 
