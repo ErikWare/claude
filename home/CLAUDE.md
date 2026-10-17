@@ -67,6 +67,12 @@ Visual assets (icons, glyphs, concept art, mockups) go to Grok via the `grok-cli
 - Claim: create or reset the slot detached at trunk tip, branch `wt/<item>`, run the project's slot setup.
 - Release: desk merges after its own CHECK; the slot returns to detached at trunk. The project file sets the slot pattern, ceiling and setup.
 
+## Global docs (size rules)
+- Caps: `CLAUDE.md` <= 1000 words; `GOAL-DRIVEN.md`, `MODEL-SCALING.md`, `ASSETS.md` <= 300 each; a skill's `SKILL.md` <= 600.
+- One home per rule. Procedures for a phrase or skill live in that skill (loaded only when used); `CLAUDE.md` keeps only what applies every turn and points to the rest.
+- Rules, not reasons: no examples or rationale unless a rule is misread without them.
+- Adding means cutting: an edit that grows a file past its cap removes text first. Each commit states the word delta (`wc -w`).
+
 ## Replies
 - Address the user as "user", never by name, in replies, docs, backlog, commits and reports from now on.
 - Shortest reply that answers. No preamble, no restating the ask, no recap of what git or a file already records.
