@@ -7,8 +7,9 @@ This file and its siblings (`GOAL-DRIVEN.md`, `MODEL-SCALING.md`, `ASSETS.md`) a
 ## Context
 - Every token is re-read on every later turn. Pass paths, never bodies: write long output to a file and report the path.
 - Grep or read with offset/limit. Pipe long command output through `| tail -50`. Run `git diff --stat` before any full diff. Don't re-read a file you just wrote.
-- Soft limit 150k: save state to disk, then `/compact` or `/clear`. Hard limit 250k: write a handoff and stop.
-- End every reply with a last line `~Nk`: an honest estimate of the tokens now in context. At the soft limit, add "save and clear?" to that line.
+- Erik can `/clear` at any moment: append to the handoff in the same turn anything changes state (merge, decision, worker spawned or landed; one short line), never on no-change turns. Never ask "save and clear?".
+- Soft limit 150k, hard limit 250k: handoff is already current, so just say so.
+- End every reply with a last line `~Nk`: an honest estimate of the tokens now in context. At the soft limit, add "ok to clear" to that line.
 
 ## Disk is memory
 The conversation is disposable; the repo is not. Anything a fresh session on another machine would need goes to disk the moment it is decided: open work in the backlog, decisions in the release file, findings in `.desk/reports/`, lessons in `.desk/LESSONS.md`. A session that only "remembers" something has lost it.
