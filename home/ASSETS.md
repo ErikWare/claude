@@ -2,9 +2,6 @@
 
 Every project keeps `ASSETS.md` at its desk root. It lists the **physical assets** (machines, services, stores, domains, accounts, devices) and **how each is controlled**: how it's started, restarted, deployed and stopped, and what must never be done to it.
 
-## Why
-Code is in the repo. Assets aren't, and control knowledge gets lost between sessions: how the daemon restarts, what a push deploys, which box holds the data. One short file stops guessing and stops accidents.
-
 ## Format: one block per asset, ≤6 lines
 ```
 ### <name> · <kind: machine | service | store | domain | account | device>
@@ -17,7 +14,6 @@ Code is in the repo. Assets aren't, and control knowledge gets lost between sess
 ```
 
 ## Rules
-- Read the project's `ASSETS.md` before touching deploy, the daemon, infra, or anything outside the repo.
 - Update it the moment a control path changes. Mark facts you haven't checked as UNVERIFIED.
 - No secrets. Name where a secret lives (`.env` key), never its value.
 - Keep it short. Detail goes in the repo docs it points to.

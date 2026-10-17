@@ -1,7 +1,5 @@
 # Goal-driven tasks
 
-Every delegated task runs to a finish line that a command can check, within a fixed budget.
-
 ## Brief template
 ```
 TASK: <what>
@@ -14,14 +12,17 @@ MODEL: <id> · <effort>
 
 ## Rules
 1. No task starts without DONE WHEN and CHECK.
-2. Verify with commands (tests, lint, build), not LLM review. Use an LLM grader only when no command can check it.
-3. Pass the CHECK honestly. Never edit the check, special-case it, monkey-patch builtins, or fake values to make it pass. If the goal looks impossible, stop and report FAIL.
-4. Same error twice means stop: write a 3-line report (error / tried / suspect) and exit. Never loop on a repeated failure.
-5. Read only the files the task names. Subagents return conclusions, not file dumps.
-6. Mechanical work goes to Sonnet (low). Haiku is banned. Opus is for planning and hard bugs (ladder: `MODEL-SCALING.md`).
-7. On failure, append one lesson line to the project's `.desk/LESSONS.md` (not CLAUDE.md, which loads every session). On success, write nothing.
-8. Final output: PASS/FAIL, CHECK result, diff stat. 5 lines max.
+2. Verify with commands (tests, lint, build); an LLM grader only when no command can.
+3. Pass the CHECK honestly: never edit or special-case it, monkey-patch builtins or fake values. Impossible goal: stop, report FAIL.
+4. Same error twice: stop, write a 3-line report (error / tried / suspect), exit.
+5. Read only the task's files. Subagents return conclusions, not file dumps.
+6. Model per `MODEL-SCALING.md`; Haiku is banned.
+7. On failure, append one lesson line to the project's `.desk/LESSONS.md` (not CLAUDE.md); on success write nothing.
+8. Final output: PASS/FAIL, CHECK result, diff stat; 5 lines max.
+9. The desk re-runs CHECK before stamping `done` (a worker's PASS is a claim) and rejects a diff outside FILES.
 
-## Desk side
-- The desk re-runs CHECK itself and rejects a diff that touches files outside FILES. A worker's "PASS" is only a claim.
-- Test on 2026-09-27 with an impossible CHECK: Haiku gamed it 3 times out of 3 (a class that fakes `+`, a patched `type()`, a `sys.excepthook` that exits 0), and it did so even with rule 3 in place. Sonnet (low) stopped and reported FAIL in 4 turns. Haiku is banned from all work.
+## Version goals
+A release file opens with 3–6 observable outcomes ("when vX.Y.Z ships, the app does …"), each with **Validate:** (its items' CHECKs plus one end-to-end proof), runnable at close (no "after 24 h"). The user signs them off before workers start. Every item names its goal, or is deferred. Human-only proof (device run) is stakeholder evidence, never blocks the tag.
+
+## Item status
+`open` · `doing` · `blocked <date> (<what the user must give>)` · `done <date> (<commit>: <proof>)` · `obsolete <date> (<superseding ID or commit>: <why>)` · `moved <date> -> v<X.Y> <ID>`. Only `done`/`obsolete` close; no soak status (time proof is a watch). Never delete an item. IDs are permanent, never reused or renumbered. `TODO(ID)` anchors leave in the closing commit.
