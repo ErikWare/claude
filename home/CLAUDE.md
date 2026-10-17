@@ -7,7 +7,7 @@ This file and its siblings (`GOAL-DRIVEN.md`, `MODEL-SCALING.md`, `ASSETS.md`) a
 ## Context
 - Every token is re-read on every later turn. Pass paths, never bodies: write long output to a file and report the path.
 - Grep or read with offset/limit. Pipe long command output through `| tail -50`. Run `git diff --stat` before any full diff. Don't re-read a file you just wrote.
-- Erik can `/clear` at any moment: append to the handoff in the same turn anything changes state (merge, decision, worker spawned or landed; one short line), never on no-change turns. Never ask "save and clear?".
+- Erik can `/clear` at any moment, so the handoff is always current: `.desk/HANDOFF-desk.md`, current state only, <= 20 lines. On a turn that changes state (merge, decision, worker spawned or landed), edit the line it changes and delete what is done or stale; never append a log, never write on no-change turns. History lives in git and reports, not the handoff. Never ask "save and clear?".
 - Soft limit 150k, hard limit 250k: handoff is already current, so just say so.
 - End every reply with a last line `~Nk`: an honest estimate of the tokens now in context. At the soft limit, add "ok to clear" to that line.
 
