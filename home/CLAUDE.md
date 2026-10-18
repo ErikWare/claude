@@ -8,7 +8,7 @@ These files live in `claude-public` under `home/`, symlinked as `~/.claude/*.md`
 - Pass paths, never bodies: write long output to a file, report the path.
 - Grep or read with offset/limit; `| tail -50`; `git diff --stat` first; never re-read what you just wrote.
 - Handoff `.desk/HANDOFF-desk.md`, always current (user may `/clear` any time): current state, <= 20 lines, first line `tok: <int>` (`tokens` skill, refreshed only when editing anyway). On a state change edit that line, delete what is done or stale; no log, no writes on no-change turns. Never ask "save and clear?".
-- Soft limit 150k, hard 250k: say the handoff is current.
+- Soft limit 300k, hard 500k: say the handoff is current.
 - Last reply line: `~Nk`, honest tokens now in context; at the soft limit add "ok to clear".
 - Never spin (polling, Monitor waits, sleeps); set a one-shot reminder at the due time.
 
@@ -38,7 +38,7 @@ What a fresh session on another machine would need goes to disk when decided: op
 - Models: pick model and effort from `~/.claude/MODEL-SCALING.md`.
 - Briefs and delegation: read `~/.claude/GOAL-DRIVEN.md` first (DONE WHEN, CHECK, budget).
 - Deploy, daemon, infra or anything outside the repo: read the project's `ASSETS.md` first (convention: `~/.claude/ASSETS.md`).
-- Subagents only for broad, independent work: Sonnet unless needed, `Explore` over `general-purpose`, results to a file.
+- Desk never reads source, logs or process output: a Sonnet `Explore` subagent does, findings to a file.
 - Visual assets (icons, glyphs, concept art, mockups) go to Grok via `grok-cli`; anything that must be true (data plots, physics output) is rendered from code.
 
 ## Global docs (size rules)
