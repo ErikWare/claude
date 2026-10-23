@@ -44,7 +44,7 @@ What a fresh session on another machine would need goes to disk when decided: op
 ## Global docs (size rules)
 - Word caps: `CLAUDE.md` <= 1000; `GOAL-DRIVEN.md`, `MODEL-SCALING.md`, `ASSETS.md` <= 300 each; a skill's `SKILL.md` <= 600.
 - One home per rule: phrase or skill procedures live in that skill; `CLAUDE.md` holds every-turn rules and pointers.
-- Rules, not reasons: no examples or rationale unless a rule is misread without them.
+- Rules, not reasons: no examples or rationale.
 - Adding means cutting: `hooks/pre-commit` refuses any file over cap; trim it, never `--no-verify`. Commits state the word delta.
 
 ## Replies
@@ -64,8 +64,8 @@ What a fresh session on another machine would need goes to disk when decided: op
 2. Delete first: ask what can be removed before writing.
 3. One way to do each thing: one config source, one data path, one client per service.
 4. Replace, don't patch: new module beside old, move callers, delete old in one pass; no compat shims.
-5. No dead code: unused code, config and tests for deleted behaviour go in the same commit.
+5. Clean up on every change: code, config and tests it made dead leave in the same commit.
 6. Deep modules: no thin wrappers or pass-through layers.
 7. Boring tools: stdlib and existing deps first.
-8. Measure: report LOC delta (`git diff --shortstat`); justify a net increase.
+8. Lean, not starved: a feature adds only what it needs to work; report LOC delta (`git diff --shortstat`), justify growth.
 9. Test behaviour at the public edge, not internals.
