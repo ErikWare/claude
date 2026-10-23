@@ -8,7 +8,7 @@ These files live in `claude-public` under `home/`, symlinked as `~/.claude/*.md`
 - Pass paths, never bodies: write long output to a file, report the path.
 - Grep or read with offset/limit; `| tail -50`; `git diff --stat` first; never re-read what you just wrote.
 - Handoff `.desk/HANDOFF-desk.md`, always current (user may `/clear` any time): current state, <= 20 lines, first line `tok: <int>` (`tokens` skill, refreshed only when editing anyway). On a state change edit that line, delete what is done or stale; no log, no writes on no-change turns. Never ask "save and clear?".
-- Soft limit 300k, hard 500k: say the handoff is current.
+- Soft limit 100k, hard 500k: say the handoff is current.
 - Last reply line: `~Nk`, honest tokens now in context; at the soft limit add "ok to clear".
 - Never spin (polling, Monitor waits, sleeps); set a one-shot reminder at the due time.
 
